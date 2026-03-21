@@ -1,0 +1,413 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{setspace}
+\usepackage{hyperref}
+\onehalfspacing
+
+% Configuración de hyperref para eliminar recuadros de colores
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=black,
+    pdfborder={0 0 0}
+}
+
+\begin{document}
+
+% ======================
+% Portada centrada
+\begin{titlepage}
+    \vspace*{\fill}
+    \begin{center}
+        {\Huge \textbf{Workshop 1 – Tech Products \& Brand Perception}} \\[0.5cm]
+        {\LARGE \textbf{Public Opinion \& Sentiment Analysis Project}} \\[1.5cm]
+        {\Large \textbf{Course:} Data Analysis Programming} \\[1cm]
+        {\Large \textbf{Team Members:}} \\[0.5cm]
+        Juan Diego Grajales Castillo \\ 
+        Carmen Sofía Flórez Juajibioy \\
+        Edgar Alejandro Mora Chala \\[1.5cm]
+        {\Large \textbf{Date:} \today} \\
+    \end{center}
+    \vspace*{\fill}
+\end{titlepage}
+
+% ======================
+% Índice
+\tableofcontents
+\newpage
+
+% ======================
+% 1. Project Overview
+\section{Project Overview}
+
+\subsection{Title and Topic Angle}
+This project, titled \textbf{“Tech Products \& Brand Perception”}, focuses on analyzing public opinion and sentiment toward technology products and brands, including smartphones, laptops, and other consumer electronics. The project explores how users discuss, evaluate, and compare different brands and innovations by analyzing textual data from both social discussion platforms and specialized review websites.
+
+\subsection{Motivation}
+In the technology sector, consumer perception plays a critical role in shaping brand reputation and influencing purchasing decisions. Users frequently share their experiences, opinions, and preferences on online platforms such as forums and review websites. However, this information is often dispersed and unstructured. By systematically collecting and analyzing this data, organizations can better understand user satisfaction, detect emerging trends, and evaluate how their products are perceived in comparison to competitors.
+
+\subsection{Goal}
+The main goal of this project is to design an end-to-end data engineering and Natural Language Processing (NLP) pipeline that integrates multiple data sources to analyze sentiment toward technology products and brands. The pipeline will combine data extracted from the X/Twitter API (using keyword-based search for technology-related terms) with data obtained through web scraping from specialized review platforms such as GSMArena. This integrated approach enables the analysis of both informal user discussions and structured product reviews, generating insights that can be visualized through an interactive dashboard.
+
+\subsection{Scope and Limitations}
+The scope of this project includes the collection and processing of textual data from two primary sources: X/Twitter API and web scraping from GSMArena. The project focuses on English-language content and applies fundamental NLP techniques for sentiment analysis, including text preprocessing and polarity classification.
+
+The analysis will cover user opinions, product evaluations, and brand perception trends. However, the project is limited to publicly available data and does not include private or proprietary datasets. Additionally, it does not implement real-time streaming or advanced deep learning models. Challenges such as noisy data, sarcasm, and incomplete reviews may affect the accuracy of sentiment classification. Furthermore, the findings may not fully represent all market segments, as they are based on specific online communities and review platforms.
+
+% ======================
+% 2. Data Sources
+\section{Data Sources}
+
+\subsection{API Source: X/Twitter API}
+
+The primary API-based data source for this project is the X (formerly Twitter) API. This platform was selected because it hosts real-time, unfiltered public conversations about technology products, including smartphones, headphones, and consumer electronics. Users frequently share opinions, reviews, and comparisons, making it an ideal source for sentiment analysis.
+
+\subsubsection{Authentication and Access}
+Access to the X API was obtained through the RapidAPI platform, which provides a straightforward interface for making authenticated requests. The API uses API key-based authentication, and the free tier allows a sufficient number of requests for data collection.
+
+\subsubsection{Base URL and Endpoints}
+The primary endpoint used for data collection is the search endpoint, which returns tweets matching specific keywords. The base URL structure is:
+
+\texttt{https://twitter-api45.p.rapidapi.com/search.php}
+
+Key parameters include:
+\begin{itemize}
+    \item \texttt{query}: Search keywords (e.g., "iPhone", "Samsung", "Sony headphones")
+    \item \texttt{limit}: Number of tweets to return per request
+    \item \texttt{cursor}: Pagination token for retrieving additional results
+\end{itemize}
+
+\subsubsection{Rate Limits and Data Format}
+The free tier imposes rate limits of approximately 50 requests per day, which is sufficient for daily ingestion of a small but representative dataset. All responses are returned in JSON format, containing rich metadata alongside the textual content.
+
+\subsubsection{Collected Data Fields}
+From each tweet, the following fields are extracted and stored:
+\begin{itemize}
+    \item \textbf{id}: Unique tweet identifier
+    \item \textbf{text}: The main content of the tweet (user opinion)
+    \item \textbf{createdAt}: Timestamp of the tweet
+    \item \textbf{lang}: Detected language of the content
+    \item \textbf{author}: User information (username, name, followers count)
+    \item \textbf{likeCount}, \textbf{retweetCount}, \textbf{replyCount}: Engagement metrics
+    \item \textbf{url}: Direct link to the tweet
+    \item \textbf{entities}: Hashtags, user mentions, and URLs within the tweet
+\end{itemize}
+
+\subsubsection{Validation Sample}
+A real API request was successfully executed, returning over 20 tweets related to technology products. The sample includes diverse content such as:
+
+\begin{quote}
+\textit{“I love my Sony xm4s”} \\
+\textit{“@\_TheJasonC In the US market, for sure. I love my OnePlus 15.”} \\
+\textit{“I love what \#nothing is doing with the new 4a pro but I hate how hard it has become to give up an \#iPhone”}
+\end{quote}
+
+The complete validation sample is available in the GitHub repository as \texttt{FirstRequestXApi.json}.
+
+\subsection{Web Scraping Source: GSMArena}
+
+The secondary data source is GSMArena, a specialized technology review website focused primarily on smartphones. This platform hosts user-generated reviews and ratings for a wide range of devices, providing structured, evaluation-oriented public opinion.
+
+\subsubsection{Target Pages and HTML Structure}
+The primary target for scraping is the user reviews section for specific smartphone models. For validation, reviews for the Samsung Galaxy S23 were collected. The HTML structure of the reviews page contains:
+\begin{itemize}
+    \item User review text within \texttt{<div class="review-body">} elements
+    \item Reviewer name within \texttt{<span class="reviewer-name">} elements
+    \item Date of review within \texttt{<div class="review-date">} elements
+    \item Numerical rating (when available) within star rating elements
+\end{itemize}
+
+\subsubsection{Ethical Scraping Assessment}
+Before implementing the scraper, the website's \texttt{robots.txt} was reviewed to ensure compliance. GSMArena allows crawling of public review pages. To avoid overloading the server, requests are spaced with delays, and scraping is scheduled weekly rather than continuously.
+
+\subsubsection{Collected Data Fields}
+From each review, the following fields are extracted:
+\begin{itemize}
+    \item \textbf{reviewer}: Username or alias of the reviewer
+    \item \textbf{date}: Date the review was posted
+    \item \textbf{text}: Full review content
+    \item \textbf{rating}: Numerical rating (scale of 1-10, when available)
+    \item \textbf{product}: Device model being reviewed
+\end{itemize}
+
+\subsubsection{Validation Sample}
+A manual scraping validation was performed, collecting over 20 reviews for the Samsung Galaxy S23. The sample includes varied content such as:
+
+\begin{quote}
+\textit{“Pro, 07 Mar 2026 — How's the battery life it holds solid 9-11 hours on 120hz constantly scrolling, its great”} \\
+\textit{“Anonymous, 05 Mar 2026 — My samsung has built in fm radio...is it fake?”} \\
+\textit{“Anonymous, 24 Nov 2025 — Not sure how is on one ui 8 as im on 6,1 get 7hr SOT 4g Oneui 8 gives 8hrs SOT on WiFi and 6 hours on 4g”}
+\end{quote}
+
+The complete validation sample is available in the GitHub repository as \texttt{webScraping.txt}.
+
+\subsection{Justification for Source Selection}
+
+The combination of X/Twitter API and GSMArena web scraping provides complementary perspectives on public opinion:
+
+\begin{itemize}
+    \item \textbf{X/Twitter} captures real-time, conversational sentiment. Users share immediate reactions to product launches, news, and trends. The data is unstructured, rich in informal language, and reflects authentic public discourse.
+    
+    \item \textbf{GSMArena} captures structured, evaluation-oriented sentiment from users who have hands-on experience with products. Reviews include detailed feedback on specific features (battery life, camera, performance) and often include numerical ratings that can serve as ground truth for sentiment validation.
+    
+    \item Together, these sources enable a multi-dimensional analysis: Twitter provides breadth and timeliness, while GSMArena provides depth and structure. This combination addresses the limitations of each source individually and creates a robust foundation for the sentiment analysis pipeline.
+\end{itemize}
+
+% ======================
+% 3. Data Relevance and Justification
+\section{Data Relevance and Justification}
+
+\subsection{Why These Sources Represent Public Opinion}
+The selected data sources—X/Twitter API and GSMArena—provide complementary perspectives on public opinion regarding technology products and brands. Each source captures a distinct dimension of user sentiment, and together they offer a comprehensive view of how consumers perceive, evaluate, and discuss technology products.
+
+\textbf{X/Twitter API} represents \textbf{unstructured, conversational public opinion}. The platform hosts millions of users who voluntarily share their opinions, experiences, and debates about technology products in real-time. The language used in these posts is informal, authentic, and often reflects immediate reactions to product launches, announcements, and market trends. Because X/Twitter content is user-generated without direct commercial curation, it provides an unfiltered view of consumer sentiment. Engagement metrics such as likes, retweets, and replies further indicate the resonance and reach of specific opinions within the community.
+
+\textbf{GSMArena}, as a specialized review platform, represents \textbf{structured, evaluation-oriented public opinion}. Users on this platform typically post reviews after purchasing or using specific smartphone models, providing detailed feedback on aspects such as battery life, camera quality, performance, and overall satisfaction. Unlike the conversational tone of X/Twitter, GSMArena reviews are often more structured, include numerical ratings, and focus on product evaluation. This source captures the voice of actual consumers who have hands-on experience with the products, making it particularly valuable for understanding satisfaction drivers and pain points.
+
+\subsection{How API and Web Scraping Complement Each Other}
+The combination of an API-based social media source and a web-scraped review platform creates a synergistic data foundation that addresses the limitations of each source individually.
+
+\begin{itemize}
+\item \textbf{Breadth vs. Depth:} X/Twitter provides breadth—a wide range of opinions across multiple brands, products, and discussion threads—while GSMArena provides depth—detailed, rating-backed evaluations of specific products from actual users.
+
+\item \textbf{Real-time vs. Cumulative:} X/Twitter captures real-time reactions to news, announcements, and emerging trends, making it sensitive to sudden shifts in sentiment. GSMArena reviews accumulate over time and reflect longer-term user satisfaction, offering a stable baseline for brand perception.
+
+\item \textbf{Qualitative vs. Quantitative:} X/Twitter data is rich in unstructured text, emojis, and informal expressions that reveal subtle nuances in sentiment. GSMArena complements this with structured fields such as numerical ratings, which can serve as ground truth labels for training or validating sentiment analysis models.
+
+\item \textbf{Conversational vs. Evaluative Context:} X/Twitter discussions often involve comparisons between products, debates, and speculative opinions. GSMArena reviews focus on actual usage experience. Analyzing both allows the pipeline to distinguish between speculative buzz and genuine user satisfaction.
+\end{itemize}
+
+\subsection{Representativeness and Limitations}
+While these sources provide rich and relevant data, it is important to acknowledge that they represent specific segments of the technology consumer population. X/Twitter users tend to be more vocal and may not represent the broader population, while GSMArena attracts enthusiasts who seek detailed specifications and performance reviews. However, for the purpose of understanding public discourse around technology products, these sources are highly appropriate and widely used in industry and academic research.
+
+\subsection{Alignment with Workshop Requirements}
+This selection satisfies the workshop's requirements by providing:
+\begin{itemize}
+\item One REST API source (X/Twitter) with documented endpoints, authentication, and rate limits.
+\item One web scraping source (GSMArena) with accessible public pages and rich textual content.
+\item Both sources contain sufficient free text to support NLP-based sentiment analysis.
+\item The combination enables a multi-dimensional analysis of public opinion, aligning with the course's focus on building an end-to-end data engineering and NLP pipeline.
+\end{itemize}
+
+% ======================
+% 4. Data Sample and Validation
+\section{Data Sample and Validation}
+
+\subsection{API Sample (X/Twitter API)}
+A sample dataset was collected from the X/Twitter API to validate data accessibility and structure. The dataset includes user-generated content such as text, language, timestamps, and engagement metrics (likes, replies, and views).
+
+A fragment of the collected data is shown below:
+
+\begin{quote}
+\texttt{\{ \\
+"id": "2034709451572142213", \\
+"text": "In my opinion this is a great achievement compared to the iPhone 14", \\
+"lang": "en", \\
+"likeCount": 12, \\
+"replyCount": 2, \\
+"viewCount": 96, \\
+"createdAt": "Thu Mar 19 19:11:50 +0000 2026" \\
+\}} \\
+\\
+\texttt{\{ \\
+"id": "2034628207077736527", \\
+"text": "Jalanku memang belum lurus, tapi setidaknya my opinion lebih berkualitas...", \\
+"lang": "in", \\
+"likeCount": 0, \\
+"replyCount": 0, \\
+"viewCount": 1, \\
+"createdAt": "Thu Mar 19 13:49:00 +0000 2026" \\
+\}} \\
+\\
+\texttt{\{ \\
+"id": "2034603229359554681", \\
+"text": "Unpopular opinion: Apple ne devrait pas faire un iPhone pliant...", \\
+"lang": "fr", \\
+"likeCount": 1, \\
+"replyCount": 1, \\
+"viewCount": 8, \\
+"createdAt": "Thu Mar 19 12:09:45 +0000 2026" \\
+\}}
+\end{quote}
+
+The complete dataset (20+ records) is provided as a JSON file in the project repository.
+
+\subsection{Scraping Sample}
+A sample dataset was collected through web scraping from GSMArena. The extracted information includes product name, rating, review text, and date.
+
+An example of the collected structure is shown below:
+
+\begin{quote}
+\texttt{Product        | Rating | Review                        | Date} \\
+\texttt{--------------------------------------------------------------} \\
+\texttt{iPhone 14      | 4.0    | Good performance but pricey   | 2024-01-12} \\
+\texttt{Galaxy S23     | 4.5    | Excellent battery life        | 2024-01-10}
+\end{quote}
+
+The full dataset (20+ records) is included in the project repository.
+
+\subsection{Data Quality Assessment}
+The collected data presents several quality challenges. First, multiple languages are present in the dataset (e.g., English, French, and Indonesian), which introduces complexity for text analysis. Additionally, the text contains informal language, abbreviations, and user mentions (e.g., @username), which can introduce noise.
+
+Some records include very short or low-information content, while others contain special characters, emojis, or formatting inconsistencies. Engagement metrics are not always consistent across records, and some fields may be missing or null.
+
+\subsection{Preliminary Cleaning Needs}
+To address the identified data quality issues, several preprocessing steps will be required. These include language filtering or translation to ensure consistency, removal of user mentions, URLs, and special characters, and normalization of text (e.g., lowercasing).
+
+Additional steps such as stopword removal, tokenization, and filtering of low-quality or irrelevant text will be applied. These preprocessing steps are essential to prepare the dataset for accurate sentiment analysis and downstream processing.
+
+% ======================
+% 5. Extraction Strategy
+\section{Extraction Strategy}
+
+\subsection{Ingestion Frequency}
+The ingestion frequency is defined based on the nature and update rate of each data source. For the API source, data ingestion is performed on a daily basis, as social media content is highly dynamic and continuously updated. This allows the pipeline to capture recent opinions and evolving sentiment trends.
+
+For the web scraping source, data ingestion is performed weekly, since reviews and opinions on these platforms tend to be more stable and do not change as frequently. This approach also helps reduce unnecessary load on the target website.
+
+\subsection{Data Format and Storage}
+Raw data is stored in JSON format, preserving the original structure of the collected information. Each file is named using a timestamp-based naming convention to ensure traceability, avoid overwriting, and maintain a historical record of the data.
+
+The naming convention follows the format:
+
+\texttt{source\_topic\_YYYYMMDD\_HHMMSS.json}
+
+For example:
+
+\texttt{x\_smartphones\_20260320\_140530.json}
+
+All files are stored in the \texttt{datalake\_bronze/} directory, corresponding to the raw data layer in the data lake architecture.
+
+\subsection{Metadata Definition}
+In addition to the textual content, relevant metadata is stored to enrich the analysis and support downstream processing. The main fields include:
+
+\begin{itemize}
+    \item Unique identifier (id)
+    \item Text content (post, comment, or review)
+    \item Creation timestamp (date)
+    \item Author or user (author)
+    \item Data source (API or scraping)
+    \item Content URL (url)
+    \item Engagement metrics (likes, comments, views)
+    \item Language (lang)
+\end{itemize}
+
+These metadata fields are essential for enabling sentiment analysis, filtering, aggregation, and the generation of meaningful insights in later stages of the pipeline.
+
+% ======================
+% 6. Pipeline Architecture
+\section{Pipeline Architecture Overview}
+
+\subsection{Bronze Layer}
+The Bronze layer represents the raw data ingestion stage of the pipeline. In this stage, data is collected from two main sources: an API-based source (X/Twitter API) and a web scraping source (GSMArena). The data is stored in its original format as JSON files, preserving all available information such as text content (posts, comments, or tweets), timestamps, authors, and engagement metrics (likes, replies, or ratings). No transformations are applied at this stage in order to ensure data traceability and reproducibility.
+
+\subsection{Silver Layer}
+The Silver layer focuses on data cleaning, normalization, and preprocessing. In this stage, the raw data is transformed into a structured format suitable for analysis. Data quality issues such as missing values, duplicates, and irrelevant content are handled. Additionally, Natural Language Processing (NLP) techniques are applied, including text normalization (lowercasing), stopword removal, and tokenization. Sentiment analysis is performed to classify the text into categories such as positive, negative, or neutral. The processed data is stored in an optimized format such as Parquet to improve performance and scalability.
+
+\subsection{Gold Layer}
+The Gold layer contains aggregated and refined data designed for analytical consumption and visualization. In this stage, key metrics and summaries are generated, such as average sentiment per brand, frequency of mentions, and trends over time. These results are structured to support dashboards and storytelling, allowing the functional user (e.g., a product marketing analyst or brand manager) to easily interpret insights about consumer perception and product performance.
+
+\subsection{Technologies}
+The workflow will be implemented using Python as the main programming language due to its flexibility and wide ecosystem for data engineering and Natural Language Processing (NLP) tasks. Data extraction from the API source will be performed using libraries such as Requests or dedicated API clients, while web scraping will be carried out using BeautifulSoup, which enables efficient extraction of structured data.
+
+Data processing and transformation will be handled using Pandas, a widely used library for data manipulation and analysis. Apache Airflow will be used for workflow orchestration, enabling automation and scheduling of data pipeline tasks. Finally, the visualization layer will be developed using Plotly Dash to build interactive dashboards that support data exploration and decision-making.
+
+\subsection{Orchestration Strategy}
+The pipeline orchestration will be managed using Apache Airflow through Directed Acyclic Graphs (DAGs), which define the sequence of tasks in the data pipeline. A primary DAG will handle data ingestion into the Bronze layer on a scheduled basis (e.g., daily). Once the raw data is available, downstream tasks will be triggered to process and transform the data into the Silver layer. Finally, aggregation processes will populate the Gold layer, preparing the data for visualization in the dashboard. 
+This modular design ensures scalability, automation, and efficient data processing.
+
+% ======================
+% 7. Functional User
+\section{Functional User}
+
+The primary functional user of this system is a product marketing analyst in the technology sector. This user is responsible for monitoring public perception of technological products, such as smartphones, and identifying trends in user opinions.
+
+The user requires access to clear and structured insights about how consumers perceive different products and brands. This includes understanding overall sentiment (positive, negative, neutral), detecting changes in opinion over time, and identifying the most frequently discussed topics or features.
+
+In terms of technical level, the user has a low to moderate technical background. They are not expected to work directly with raw data, code, or data engineering tools. Instead, they rely on intuitive and interactive dashboards to explore the data, interpret results, and support decision-making processes.
+
+This user benefits from the system by gaining data-driven insights that can inform marketing strategies, product improvements, and competitive analysis, without requiring advanced technical expertise.
+
+% ======================
+% 8. User Stories
+\section{User Stories}
+
+\begin{itemize}
+\item \textbf{As a} product marketing analyst, \textbf{I want to} view overall sentiment trends per brand over time \textbf{so that} I can identify whether public perception of our products is improving or declining after marketing campaigns.
+
+\item \textbf{As a} product marketing analyst, \textbf{I want to} compare sentiment across competing brands (e.g., Apple, Samsung, Google) \textbf{so that} I can benchmark our brand’s performance against key competitors and identify competitive advantages or weaknesses.
+
+\item \textbf{As a} product marketing analyst, \textbf{I want to} see which product features (e.g., battery life, camera, display) are most frequently mentioned in positive versus negative reviews \textbf{so that} I can understand what aspects of our products resonate with users and what areas require improvement.
+
+\item \textbf{As a} product marketing analyst, \textbf{I want to} detect sudden spikes or drops in sentiment related to specific product launches or announcements \textbf{so that} I can react quickly to emerging issues or capitalize on positive momentum.
+
+\item \textbf{As a} product marketing analyst, \textbf{I want to} filter sentiment data by source (X/Twitter vs. GSMArena) \textbf{so that} I can distinguish between informal social media buzz and structured user reviews, allowing for more nuanced analysis.
+
+\item \textbf{As a} product marketing analyst, \textbf{I want to} view a dashboard that updates daily with fresh sentiment insights \textbf{so that} I can rely on current data for weekly marketing reports and strategy meetings without needing technical assistance.
+\end{itemize}
+
+% ======================
+% 9. Conclusions
+\section{Conclusions}
+
+This workshop established the foundational elements for the development of a complete data engineering and Natural Language Processing (NLP) pipeline focused on sentiment analysis of technology products and brands. The project, titled \textit{“Tech Products \& Brand Perception”}, aims to integrate two complementary data sources: the X/Twitter API and web scraping from GSMArena.
+
+\subsection{Summary of Achievements}
+Throughout this workshop, the team successfully:
+\begin{itemize}
+    \item Defined a clear and feasible topic angle within the broad domain of public opinion and sentiment analysis, focusing specifically on technology products and brand perception.
+    \item Identified and validated two data sources: the X/Twitter API (through RapidAPI) for real-time conversational data, and GSMArena for structured user reviews. Both sources were tested with real requests, yielding over 20 valid records each, demonstrating accessibility and data quality.
+    \item Characterized the structure, fields, and limitations of each source, documenting authentication methods, rate limits, and ethical considerations for web scraping.
+    \item Designed an extraction strategy with daily ingestion for the API source and weekly ingestion for the scraping source, using timestamp-based JSON naming conventions stored in a datalake bronze layer.
+    \item Defined the three-layer pipeline architecture (Bronze, Silver, Gold) and selected appropriate technologies including Python, Pandas, BeautifulSoup, Apache Airflow, and Plotly Dash.
+    \item Identified the primary functional user as a product marketing analyst with low to moderate technical background, and developed six user stories that will guide dashboard design in later workshops.
+\end{itemize}
+
+\subsection{Adaptation to Source Changes}
+Initially, the project planned to use the Reddit API as the primary social media source. However, due to pending authorization and approval constraints, the team pivoted to the X/Twitter API as an alternative. This adjustment demonstrates the project's flexibility and the importance of having backup data sources. The X/Twitter API proved to be a suitable replacement, offering similar characteristics: real-time textual data, engagement metrics, and rich metadata. The validation sample collected from X/Twitter confirms that the source contains sufficient technology-related content to support the sentiment analysis goals of the project.
+
+\subsection{Feasibility Assessment}
+The project is deemed feasible based on the following considerations:
+\begin{itemize}
+    \item \textbf{Data Accessibility:} Both sources are publicly accessible with clear documentation. The X/Twitter API is available through RapidAPI with a free tier, and GSMArena allows ethical scraping of public review pages.
+    \item \textbf{NLP Feasibility:} Both sources contain substantial English-language textual content suitable for sentiment analysis. While challenges such as informal language, emojis, and mixed languages exist, these can be addressed through standard preprocessing techniques.
+    \item \textbf{Technical Complexity:} The proposed technologies (Python, Pandas, BeautifulSoup, Airflow, Plotly Dash) are well-documented and widely used, with a manageable learning curve for the team.
+    \item \textbf{Scope Alignment:} The defined scope—daily ingestion, basic sentiment classification, and an interactive dashboard—is realistic within the course timeline and avoids over-ambitious features such as real-time streaming or deep learning models.
+\end{itemize}
+
+\subsection{Next Steps}
+The work completed in this workshop provides a solid foundation for subsequent workshops. The next phase will involve:
+\begin{itemize}
+    \item Implementing the ingestion DAGs in Apache Airflow to automate data collection from both sources.
+    \item Developing the Silver layer transformation logic, including text preprocessing and sentiment classification.
+    \item Building the Gold layer aggregations and designing the Plotly Dash dashboard based on the defined user stories.
+    \item Conducting exploratory data analysis to refine preprocessing strategies and validate sentiment classification accuracy.
+\end{itemize}
+
+\subsection{Final Remarks}
+This project addresses a relevant and timely topic—understanding public perception of technology products—through a structured data engineering approach. By combining real-time social media conversations with in-depth product reviews, the pipeline will provide valuable insights for marketing analysts and brand managers. The adaptability demonstrated in sourcing alternative data ensures the project remains on track despite initial authorization challenges. With a clear architecture, defined user needs, and validated data sources, the team is well-positioned to proceed with implementation in the upcoming workshops.
+
+% ======================
+% 10. References
+\section{References}
+
+\begin{itemize}
+    \item X/Twitter API Documentation. (n.d.). \textit{X Developer Platform}. Retrieved March 20, 2026, from \url{https://developer.x.com/en/docs}
+    
+    \item RapidAPI. (n.d.). \textit{RapidAPI Hub}. Retrieved March 20, 2026, from \url{https://rapidapi.com}
+    
+    \item GSMArena. (n.d.). \textit{GSMArena.com – Phone reviews, news, specifications}. Retrieved March 20, 2026, from \url{https://www.gsmarena.com}
+    
+    \item Richardson, L. (n.d.). \textit{BeautifulSoup Documentation}. Retrieved March 20, 2026, from \url{https://www.crummy.com/software/BeautifulSoup/}
+    
+    \item Apache Software Foundation. (n.d.). \textit{Apache Airflow Documentation}. Retrieved March 20, 2026, from \url{https://airflow.apache.org/docs/}
+    
+    \item Plotly Technologies Inc. (n.d.). \textit{Dash Documentation}. Retrieved March 20, 2026, from \url{https://dash.plotly.com/}
+\end{itemize}
+
+\end{document}
