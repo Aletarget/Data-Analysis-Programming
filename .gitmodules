@@ -1,0 +1,3 @@
+[submodule "getRawDataService"]
+	path = getRawDataService
+	url = https://github.com/Aletarget/WebScraping.git
