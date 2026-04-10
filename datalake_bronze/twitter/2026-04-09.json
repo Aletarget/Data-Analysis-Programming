@@ -1,0 +1,3525 @@
+[
+  {
+    "_id": "69d86f08aae727ea3c009a31",
+    "tweets": [
+      {
+        "type": "tweet",
+        "id": "2042444537281593777",
+        "url": "https://x.com/ProfessorCardz/status/2042444537281593777",
+        "twitterUrl": "https://twitter.com/ProfessorCardz/status/2042444537281593777",
+        "text": "Hey iPhone battery replacers! \n\niPhone 13 - 4 years old. Battery percentage at 76%\n\nContemplating battery replacement. Is it worth it? \n#apple #iPhone https://t.co/GRkmUAwcz3",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 1,
+        "quoteCount": 0,
+        "viewCount": 31,
+        "createdAt": "Fri Apr 10 03:28:19 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2042444537281593777",
+        "displayTextRange": [
+          0,
+          150
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "ProfessorCardz",
+          "url": "https://x.com/ProfessorCardz",
+          "twitterUrl": "https://twitter.com/ProfessorCardz",
+          "id": "1612073411995664384",
+          "name": "Professor Cardz",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/1660193614725779456/GL8zhIkb_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1612073411995664384/1763744362",
+          "description": "",
+          "location": "New Delhi",
+          "followers": 14119,
+          "following": 645,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": true,
+          "createdAt": "Sun Jan 08 13:07:44 +0000 2023",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 9079,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 2463,
+          "statusesCount": 12989,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "2030287460165706095"
+          ],
+          "profile_bio": {
+            "description": "Credit card enthusiast with 13+ years and 35 Credit cards of Experience. Masters in Aeronautical Engineering. Cybersecurity guy. Find me on YouTube for videos.",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              },
+              "url": {
+                "urls": [
+                  {
+                    "display_url": "youtube.com/@ProfessorCardz",
+                    "expanded_url": "https://www.youtube.com/@ProfessorCardz",
+                    "indices": [
+                      0,
+                      23
+                    ],
+                    "url": "https://t.co/Z3GvVgoa7H"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/GRkmUAwcz3",
+              "expanded_url": "https://twitter.com/ProfessorCardz/status/2042444537281593777/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": []
+                },
+                "orig": {
+                  "faces": []
+                }
+              },
+              "id_str": "2042444528007987201",
+              "indices": [
+                151,
+                174
+              ],
+              "media_key": "3_2042444528007987201",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxYOHoVW0ABCgACHFg4fD4bQbEAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHFg4ehVbQAEKAAIcWDh8PhtBsQAA",
+                  "media_key": "3_2042444528007987201"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HFg4ehVbQAEuMGH.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 655,
+                    "w": 1170,
+                    "x": 0,
+                    "y": 131
+                  },
+                  {
+                    "h": 1170,
+                    "w": 1170,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1334,
+                    "w": 1170,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1669,
+                    "w": 835,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1669,
+                    "w": 1170,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 1669,
+                "width": 1170
+              },
+              "sizes": {
+                "large": {
+                  "h": 1669,
+                  "w": 1170
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/GRkmUAwcz3"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [
+            {
+              "indices": [
+                136,
+                142
+              ],
+              "text": "apple"
+            },
+            {
+              "indices": [
+                143,
+                150
+              ],
+              "text": "iPhone"
+            }
+          ],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2042356352027410907",
+        "url": "https://x.com/MarghubR16168/status/2042356352027410907",
+        "twitterUrl": "https://twitter.com/MarghubR16168/status/2042356352027410907",
+        "text": "@SamsungIndia @SamsungSupport\nVery disappointed. I bought a Samsung Galaxy S23 Ultra for ₹1,05,000 and after the latest update, a green line appeared on the screen.\n\nNo physical damage. Requesting FREE screen replacement. Please resolve urgently.\n#Samsung #GreenLineIssue https://t.co/2ld26j6u4b",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 1,
+        "quoteCount": 0,
+        "viewCount": 29,
+        "createdAt": "Thu Apr 09 21:37:54 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2042356352027410907",
+        "displayTextRange": [
+          0,
+          271
+        ],
+        "inReplyToUserId": "46134530",
+        "inReplyToUsername": "SamsungIndia",
+        "author": {
+          "type": "user",
+          "userName": "MarghubR16168",
+          "url": "https://x.com/MarghubR16168",
+          "twitterUrl": "https://twitter.com/MarghubR16168",
+          "id": "1722152491138367488",
+          "name": "marghub rahman",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2012495197809016832/uKI3daGD_normal.jpg",
+          "coverPicture": "",
+          "description": "",
+          "location": "",
+          "followers": 0,
+          "following": 10,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Wed Nov 08 07:22:23 +0000 2023",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 14,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 3,
+          "statusesCount": 5,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "display_url": "pic.twitter.com/2ld26j6u4b",
+              "expanded_url": "https://twitter.com/MarghubR16168/status/2042356352027410907/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": [
+                    {
+                      "h": 206,
+                      "w": 206,
+                      "x": 112,
+                      "y": 771
+                    }
+                  ]
+                },
+                "orig": {
+                  "faces": [
+                    {
+                      "h": 206,
+                      "w": 206,
+                      "x": 112,
+                      "y": 771
+                    }
+                  ]
+                }
+              },
+              "id_str": "2042356349221421056",
+              "indices": [
+                272,
+                295
+              ],
+              "media_key": "3_2042356349221421056",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxX6EdcG0AACgACHFfoSANbQdsAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHFfoR1wbQAAKAAIcV+hIA1tB2wAA",
+                  "media_key": "3_2042356349221421056"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HFfoR1wbQAAvhCO.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 440,
+                    "w": 786,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 786,
+                    "w": 786,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 896,
+                    "w": 786,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1572,
+                    "w": 786,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1600,
+                    "w": 786,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 1600,
+                "width": 786
+              },
+              "sizes": {
+                "large": {
+                  "h": 1600,
+                  "w": 786
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/2ld26j6u4b"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [
+            {
+              "indices": [
+                247,
+                255
+              ],
+              "text": "Samsung"
+            },
+            {
+              "indices": [
+                256,
+                271
+              ],
+              "text": "GreenLineIssue"
+            }
+          ],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": [
+            {
+              "id_str": "46134530",
+              "indices": [
+                0,
+                13
+              ],
+              "name": "Samsung India",
+              "screen_name": "SamsungIndia"
+            },
+            {
+              "id_str": "1968174821340303360",
+              "indices": [
+                14,
+                29
+              ],
+              "name": "hacked by peniche",
+              "screen_name": "SamsungSupport"
+            }
+          ]
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2041877436258726386",
+        "url": "https://x.com/VerdeSelvans/status/2041877436258726386",
+        "twitterUrl": "https://twitter.com/VerdeSelvans/status/2041877436258726386",
+        "text": "After using the Samsung Galaxy S25 FE for over a week, I can confidently say it’s one of the best value for money Samsung phones right now.\n\nFor just $500, you’re getting:\n• a smooth and polished UI\n• solid, premium build quality\n• impressive main and ultrawide cameras\n• loud and clear speakers\n• a great display\n\nThe downside of the Samsung Galaxy S25 FE is its pretty average battery life. If you’re a heavy user, you’ll likely need to charge it twice a day, and also the Exynos 2400 heats up quite easily on outdoors.",
+        "source": "Twitter for iPhone",
+        "retweetCount": 21,
+        "replyCount": 38,
+        "likeCount": 657,
+        "quoteCount": 1,
+        "viewCount": 52175,
+        "createdAt": "Wed Apr 08 13:54:51 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 91,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2041877436258726386",
+        "displayTextRange": [
+          0,
+          276
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "VerdeSelvans",
+          "url": "https://x.com/VerdeSelvans",
+          "twitterUrl": "https://twitter.com/VerdeSelvans",
+          "id": "1303369566366564353",
+          "name": "Bradley",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2036463593378684928/IXUddmSP_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1303369566366564353/1775487573",
+          "description": "",
+          "location": "DIVE",
+          "followers": 7087,
+          "following": 851,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": false,
+          "createdAt": "Tue Sep 08 16:28:23 +0000 2020",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 95087,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 9681,
+          "statusesCount": 68199,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "Tech lover | K-Pop fan",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "display_url": "pic.twitter.com/cxeUYmfX8l",
+              "expanded_url": "https://twitter.com/VerdeSelvans/status/2041877436258726386/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": []
+                },
+                "orig": {
+                  "faces": []
+                }
+              },
+              "id_str": "2041877426398228481",
+              "indices": [
+                277,
+                300
+              ],
+              "media_key": "3_2041877426398228481",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxWNLNzWvABCgACHFY0tb8WMfIAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHFY0s3Na8AEKAAIcVjS1vxYx8gAA",
+                  "media_key": "3_2041877426398228481"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HFY0s3Na8AExisS.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 1720,
+                    "w": 3072,
+                    "x": 0,
+                    "y": 1700
+                  },
+                  {
+                    "h": 3072,
+                    "w": 3072,
+                    "x": 0,
+                    "y": 1024
+                  },
+                  {
+                    "h": 3502,
+                    "w": 3072,
+                    "x": 0,
+                    "y": 594
+                  },
+                  {
+                    "h": 4096,
+                    "w": 2048,
+                    "x": 307,
+                    "y": 0
+                  },
+                  {
+                    "h": 4096,
+                    "w": 3072,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 4096,
+                "width": 3072
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 1536
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/cxeUYmfX8l"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2041654754456301988",
+        "url": "https://x.com/DaveTaylor/status/2041654754456301988",
+        "twitterUrl": "https://twitter.com/DaveTaylor/status/2041654754456301988",
+        "text": "The  PELADN WO4 AMD Ryzen 5 Mini PC is an amazing little device: It'll fit in the palm of your hand, but offers impressive performance and Windows 11 Pro. I got my hands on one and ran it through its paces... https://t.co/vQ0amxtNI5 #windowspc #minipc #windows @Peladn_MiniPC https://t.co/tg20tUR55c",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 29,
+        "createdAt": "Tue Apr 07 23:10:00 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2041654754456301988",
+        "displayTextRange": [
+          0,
+          275
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "DaveTaylor",
+          "url": "https://x.com/DaveTaylor",
+          "twitterUrl": "https://twitter.com/DaveTaylor",
+          "id": "9973392",
+          "name": "Dave Taylor",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/831750298699980800/HT2dTT8z_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/9973392/1578147103",
+          "description": "",
+          "location": "Boulder, CO",
+          "followers": 13253,
+          "following": 764,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": true,
+          "createdAt": "Mon Nov 05 17:56:51 +0000 2007",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 6218,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 70844,
+          "statusesCount": 122844,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "Writer, YouTuber, entrepreneur, film and media critic, techie, gamer and proud father to three great kids!",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              },
+              "url": {
+                "urls": [
+                  {
+                    "display_url": "AskDaveTaylor.com",
+                    "expanded_url": "https://www.AskDaveTaylor.com",
+                    "indices": [
+                      0,
+                      23
+                    ],
+                    "url": "https://t.co/FlrPoQdN47"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/tg20tUR55c",
+              "expanded_url": "https://twitter.com/DaveTaylor/status/2041654754456301988/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": [
+                    {
+                      "h": 228,
+                      "w": 228,
+                      "x": 377,
+                      "y": 134
+                    }
+                  ]
+                },
+                "orig": {
+                  "faces": [
+                    {
+                      "h": 228,
+                      "w": 228,
+                      "x": 377,
+                      "y": 134
+                    }
+                  ]
+                }
+              },
+              "id_str": "2024245147442302979",
+              "indices": [
+                276,
+                299
+              ],
+              "media_key": "3_2024245147442302979",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARwXkDyXm1ADCgACHFVqLpla8aQAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHBeQPJebUAMKAAIcVWoumVrxpAAA",
+                  "media_key": "3_2024245147442302979"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HBeQPJebUAMFjV7.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 554,
+                    "w": 989,
+                    "x": 0,
+                    "y": 7
+                  },
+                  {
+                    "h": 989,
+                    "w": 989,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1034,
+                    "w": 907,
+                    "x": 38,
+                    "y": 0
+                  },
+                  {
+                    "h": 1034,
+                    "w": 517,
+                    "x": 233,
+                    "y": 0
+                  },
+                  {
+                    "h": 1034,
+                    "w": 989,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 1034,
+                "width": 989
+              },
+              "sizes": {
+                "large": {
+                  "h": 1034,
+                  "w": 989
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/tg20tUR55c"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [
+            {
+              "indices": [
+                233,
+                243
+              ],
+              "text": "windowspc"
+            },
+            {
+              "indices": [
+                244,
+                251
+              ],
+              "text": "minipc"
+            },
+            {
+              "indices": [
+                252,
+                260
+              ],
+              "text": "windows"
+            }
+          ],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [
+            {
+              "display_url": "youtube.com/watch?v=fKLQUx…",
+              "expanded_url": "https://www.youtube.com/watch?v=fKLQUxkQ8gc",
+              "indices": [
+                209,
+                232
+              ],
+              "url": "https://t.co/vQ0amxtNI5"
+            }
+          ],
+          "user_mentions": [
+            {
+              "id_str": "1744209586301857792",
+              "indices": [
+                261,
+                275
+              ],
+              "name": "PELADN Mini PC",
+              "screen_name": "Peladn_MiniPC"
+            }
+          ]
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2041072528534495498",
+        "url": "https://x.com/spydercut/status/2041072528534495498",
+        "twitterUrl": "https://twitter.com/spydercut/status/2041072528534495498",
+        "text": "- Nokia 7210 Supernova (loved the speaker and the speaker accessories on this)\n- Nokia X2 (music buttons)\n- Moto E (compact)\n- Lenovo Vibe K4 Note (still have the VR headset)\n- BlackShark 2 (the best)\n- Google Pixel 7A (only for camera)\n- iPhone 16 (1st phone I bought on my own)",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 2,
+        "quoteCount": 0,
+        "viewCount": 229,
+        "createdAt": "Mon Apr 06 08:36:26 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2041072528534495498",
+        "displayTextRange": [
+          0,
+          279
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "spydercut",
+          "url": "https://x.com/spydercut",
+          "twitterUrl": "https://twitter.com/spydercut",
+          "id": "1185079381913264128",
+          "name": "batman",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2031425305173438465/TVhtNIAU_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1185079381913264128/1762832970",
+          "description": "",
+          "location": "end of line club",
+          "followers": 1057,
+          "following": 3444,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": false,
+          "createdAt": "Fri Oct 18 06:25:27 +0000 2019",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 182944,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 1581,
+          "statusesCount": 9859,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "1661780934151258112"
+          ],
+          "profile_bio": {
+            "description": "the fresh prince of walt-air. designs posters once in a while | MB | ZHUMAN | against AI art",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              },
+              "url": {
+                "urls": [
+                  {
+                    "display_url": "behance.net/whoishaas",
+                    "expanded_url": "https://www.behance.net/whoishaas",
+                    "indices": [
+                      0,
+                      23
+                    ],
+                    "url": "https://t.co/WoDxMp8VnO"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": {
+          "type": "tweet",
+          "id": "2040823889044087226",
+          "url": "https://x.com/milkteapalette/status/2040823889044087226",
+          "twitterUrl": "https://twitter.com/milkteapalette/status/2040823889044087226",
+          "text": "Tell me your phone journey\n- Some mts phone model i don't remember \n- Samsung Galaxy Y\n- Nokia x2\n- Some lenovo model\n- Gionee A1\n- Micromax canvas something\n- Samsung a70s\n- Samsung s25",
+          "source": "Twitter for iPhone",
+          "retweetCount": 1,
+          "replyCount": 10,
+          "likeCount": 69,
+          "quoteCount": 108,
+          "viewCount": 27777,
+          "createdAt": "Sun Apr 05 16:08:26 +0000 2026",
+          "lang": "en",
+          "bookmarkCount": 13,
+          "isReply": false,
+          "inReplyToId": null,
+          "conversationId": "2040823889044087226",
+          "displayTextRange": [
+            0,
+            186
+          ],
+          "inReplyToUserId": null,
+          "inReplyToUsername": null,
+          "author": {
+            "type": "user",
+            "userName": "milkteapalette",
+            "url": "https://x.com/milkteapalette",
+            "twitterUrl": "https://twitter.com/milkteapalette",
+            "id": "1927228538786115584",
+            "name": "J 🍉🍁💜 | A Typoevsky 😔",
+            "isVerified": false,
+            "isBlueVerified": false,
+            "verifiedType": null,
+            "profilePicture": "https://pbs.twimg.com/profile_images/2030287584942010369/e7dAeHeN_normal.jpg",
+            "coverPicture": "https://pbs.twimg.com/profile_banners/1927228538786115584/1771324889",
+            "description": "",
+            "location": "30",
+            "followers": 1197,
+            "following": 525,
+            "status": "",
+            "canDm": false,
+            "canMediaTag": false,
+            "createdAt": "Tue May 27 05:01:17 +0000 2025",
+            "entities": {
+              "description": {
+                "urls": []
+              }
+            },
+            "fastFollowersCount": 0,
+            "favouritesCount": 199219,
+            "hasCustomTimelines": true,
+            "isTranslator": false,
+            "mediaCount": 3724,
+            "statusesCount": 57014,
+            "withheldInCountries": [],
+            "possiblySensitive": false,
+            "pinnedTweetIds": [
+              "2026259491382280445"
+            ],
+            "profile_bio": {
+              "description": "What’s the world for you if you can’t make it up the way you want it?",
+              "entities": {
+                "description": {
+                  "hashtags": [],
+                  "symbols": [],
+                  "urls": [],
+                  "user_mentions": []
+                }
+              }
+            },
+            "isAutomated": false,
+            "automatedBy": null
+          },
+          "card": null,
+          "entities": {
+            "hashtags": [],
+            "symbols": [],
+            "timestamps": [],
+            "urls": [],
+            "user_mentions": []
+          },
+          "quoted_tweet": {
+            "type": "tweet",
+            "id": "2040822218104750289",
+            "url": "",
+            "twitterUrl": "",
+            "text": "",
+            "source": "Twitter for iPhone",
+            "retweetCount": 0,
+            "replyCount": 0,
+            "likeCount": 0,
+            "quoteCount": 0,
+            "viewCount": 0,
+            "createdAt": "",
+            "lang": "",
+            "bookmarkCount": 0,
+            "isReply": false,
+            "inReplyToId": null,
+            "conversationId": "",
+            "displayTextRange": [],
+            "inReplyToUserId": null,
+            "inReplyToUsername": null,
+            "card": null,
+            "quoted_tweet": null,
+            "retweeted_tweet": null,
+            "isLimitedReply": false,
+            "communityInfo": null,
+            "article": null
+          },
+          "retweeted_tweet": null,
+          "isLimitedReply": false,
+          "communityInfo": null,
+          "article": null
+        },
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2040818038887338197",
+        "url": "https://x.com/_TooThpasTe___/status/2040818038887338197",
+        "twitterUrl": "https://twitter.com/_TooThpasTe___/status/2040818038887338197",
+        "text": "After switching to base iPhone 17……and then looked at an iPhone 16.\n\nAll I can say is there’s huge differences between these two. The 16 bezels look huuuge!! The fact I’m getting double 48mp back cameras and an 18 mp front camera and lots of “flagship” features is worth it!😊",
+        "source": "Twitter for iPhone",
+        "retweetCount": 4,
+        "replyCount": 1,
+        "likeCount": 47,
+        "quoteCount": 0,
+        "viewCount": 2641,
+        "createdAt": "Sun Apr 05 15:45:11 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2040818038887338197",
+        "displayTextRange": [
+          0,
+          275
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "_TooThpasTe___",
+          "url": "https://x.com/_TooThpasTe___",
+          "twitterUrl": "https://twitter.com/_TooThpasTe___",
+          "id": "1685791745462648832",
+          "name": "TooThpasTe",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2004663414925225984/nma2s7mT_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1685791745462648832/1759480286",
+          "description": "",
+          "location": "",
+          "followers": 7630,
+          "following": 5171,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": true,
+          "createdAt": "Sun Jul 30 23:17:56 +0000 2023",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 59474,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 4049,
+          "statusesCount": 77810,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "1778749682430169235"
+          ],
+          "profile_bio": {
+            "description": "Tech Account of The year 2024 🥇 ||Founder @mobilehub_ug , MobiGames and Tu’Alu Agency || Black pepper Farmer, Buyer and Exporter || Electric Car enthusiast",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": [
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      42,
+                      55
+                    ],
+                    "name": "",
+                    "screen_name": "mobilehub_ug"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2040441615274406223",
+        "url": "https://x.com/sid_jadv/status/2040441615274406223",
+        "twitterUrl": "https://twitter.com/sid_jadv/status/2040441615274406223",
+        "text": "Disappointed with @SamsungIndia @SamsungMobile. My Samsung Galaxy S21 FE had heating &amp; network issues, now a green line on display Denying replacement due to minor crack on plastic back cover? Not even frame/front. Unacceptable. I’ll make sure everyone I know never buys Samsung",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 2,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 191,
+        "createdAt": "Sat Apr 04 14:49:25 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2040441615274406223",
+        "displayTextRange": [
+          0,
+          282
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "sid_jadv",
+          "url": "https://x.com/sid_jadv",
+          "twitterUrl": "https://twitter.com/sid_jadv",
+          "id": "1143135847",
+          "name": "Siddhesh",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/3206632901/ba115442a5883dedc4d3a1524672b891_normal.jpeg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1143135847/1359982575",
+          "description": "",
+          "location": "",
+          "followers": 5,
+          "following": 14,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Sat Feb 02 18:42:00 +0000 2013",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 0,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 0,
+          "statusesCount": 1,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": [
+            {
+              "id_str": "46134530",
+              "indices": [
+                18,
+                31
+              ],
+              "name": "Samsung India",
+              "screen_name": "SamsungIndia"
+            },
+            {
+              "id_str": "297169759",
+              "indices": [
+                32,
+                46
+              ],
+              "name": "Samsung Mobile",
+              "screen_name": "SamsungMobile"
+            }
+          ]
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2040252908889886975",
+        "url": "https://x.com/faelightxx/status/2040252908889886975",
+        "twitterUrl": "https://twitter.com/faelightxx/status/2040252908889886975",
+        "text": "I bought a phone with a good af camera (iphone 16 pro) but 99% of the pics I take, are just pics of my dog ngl HAHAHA",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 1,
+        "likeCount": 1,
+        "quoteCount": 0,
+        "viewCount": 54,
+        "createdAt": "Sat Apr 04 02:19:34 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2040252908889886975",
+        "displayTextRange": [
+          0,
+          117
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "faelightxx",
+          "url": "https://x.com/faelightxx",
+          "twitterUrl": "https://twitter.com/faelightxx",
+          "id": "2029100491209359364",
+          "name": "fae ⋆⭒˚.⋆",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2029197010419535872/OLNIkaD8_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/2029100491209359364/1772633340",
+          "description": "",
+          "location": "she/her • in your heart ⋆｡°✩",
+          "followers": 33,
+          "following": 56,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Wed Mar 04 07:43:59 +0000 2026",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 5464,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 26,
+          "statusesCount": 218,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "2029220970385301746"
+          ],
+          "profile_bio": {
+            "description": "²³ ⋆ 𝚕𝚘𝚜𝚝 𝚕𝚒𝚐𝚑𝚝𝚜 ⋆｡˚ ☁︎ ˚｡⋆｡˚☽˚｡⋆",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              },
+              "url": {
+                "urls": [
+                  {
+                    "display_url": "linktr.ee/faelightx",
+                    "expanded_url": "https://linktr.ee/faelightx",
+                    "indices": [
+                      0,
+                      23
+                    ],
+                    "url": "https://t.co/8uLnR32KhV"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2040024181950034306",
+        "url": "https://x.com/SalsaTech1/status/2040024181950034306",
+        "twitterUrl": "https://twitter.com/SalsaTech1/status/2040024181950034306",
+        "text": "iPhone 13 vs iPhone 15 Camera Test — Is the Upgrade REALLY Worth It? 📸\n\nAt first glance, they look similar. But once you press the shutter, the difference becomes clear.\n\nThe iPhone 13 uses a 12MP main camera, while the iPhone 15 jumps to 48MP, delivering up to 4x more detail. That means sharper images, cleaner crops, and significantly better zoom results without losing quality.\n\nAnd speaking of zoom, the iPhone 15 introduces 2x lossless zoom powered by its high-resolution sensor. No telephoto lens, yet it still achieves optical-quality results. On the iPhone 13, zooming in quickly reduces detail.\n\nLow-light photography is another major shift. While both devices support Night Mode, the iPhone 15 is backed by a more advanced image processing system. The result is better light balance, more natural skin tones, and improved shadow detail.\n\nColor and dynamic range also see noticeable improvements. The iPhone 13 delivers solid images, but the iPhone 15 produces richer colors, stronger contrast, and more accurate highlights, closer to what your eyes actually see.\n\nPortrait photography has evolved too. The iPhone 15 offers improved edge detection, more realistic background blur, and the ability to adjust focus after taking the shot, something the iPhone 13 can’t match in complex scenes.\n\nFor video, both shoot in 4K and perform well, but the iPhone 15 benefits from better stabilization, cleaner HDR, and more consistent results in challenging lighting conditions.\n\nSo what’s the verdict?\n\nIf you take casual photos, the iPhone 13 still holds up. But if you care about detail, zoom, low-light performance, and content-quality output, the iPhone 15 is a clear upgrade.\n\nThis isn’t just a camera improvement. It’s the difference between taking photos and creating content.\n\nWhich one are you choosing, iPhone 13 or iPhone 15? 👇\n\n#iPhone15 #iPhone13 #Apple #TechReview #SalsaTech",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 1,
+        "likeCount": 5,
+        "quoteCount": 0,
+        "viewCount": 95,
+        "createdAt": "Fri Apr 03 11:10:41 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2040024181950034306",
+        "displayTextRange": [
+          0,
+          277
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "SalsaTech1",
+          "url": "https://x.com/SalsaTech1",
+          "twitterUrl": "https://twitter.com/SalsaTech1",
+          "id": "1199258179449827329",
+          "name": "SALSA",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2018062410179895296/W5PfAkr9_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1199258179449827329/1764560955",
+          "description": "",
+          "location": "",
+          "followers": 11434,
+          "following": 4842,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": true,
+          "createdAt": "Tue Nov 26 09:26:57 +0000 2019",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 59413,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 1174,
+          "statusesCount": 27613,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "2018343425184072176"
+          ],
+          "profile_bio": {
+            "description": "Tech & Crypto | Digital Products Co-Founder & Partner @SalsaGadgets @SalsaGadgetShop | Man City Supporter",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": [
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      54,
+                      67
+                    ],
+                    "name": "",
+                    "screen_name": "SalsaGadgets"
+                  },
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      68,
+                      84
+                    ],
+                    "name": "",
+                    "screen_name": "SalsaGadgetShop"
+                  }
+                ]
+              },
+              "url": {
+                "urls": [
+                  {
+                    "display_url": "salsagadgets.com",
+                    "expanded_url": "http://salsagadgets.com",
+                    "indices": [
+                      0,
+                      23
+                    ],
+                    "url": "https://t.co/UemMVAAnj9"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "additional_media_info": {
+                "monetizable": false
+              },
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/zysb9hn8Rp",
+              "expanded_url": "https://twitter.com/SalsaTech1/status/2040024181950034306/video/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "id_str": "2040024096235556864",
+              "indices": [
+                278,
+                301
+              ],
+              "media_key": "7_2040024096235556864",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAwoAARxPnxtlW5AACgACHE+fL1pWsYIAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAADCgABHE+fG2VbkAAKAAIcT58vWlaxggAA",
+                  "media_key": "7_2040024096235556864"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/2040024096235556864/pu/img/6ZQTRT__-8quB3W8.jpg",
+              "original_info": {
+                "focus_rects": [],
+                "height": 1080,
+                "width": 720
+              },
+              "sizes": {
+                "large": {
+                  "h": 1080,
+                  "w": 720
+                }
+              },
+              "type": "video",
+              "url": "https://t.co/zysb9hn8Rp",
+              "video_info": {
+                "aspect_ratio": [
+                  2,
+                  3
+                ],
+                "duration_millis": 18786,
+                "variants": [
+                  {
+                    "content_type": "application/x-mpegURL",
+                    "url": "https://video.twimg.com/ext_tw_video/2040024096235556864/pu/pl/-V1hR61B5HKpMu2z.m3u8?tag=19"
+                  },
+                  {
+                    "bitrate": 632000,
+                    "content_type": "video/mp4",
+                    "url": "https://video.twimg.com/ext_tw_video/2040024096235556864/pu/vid/avc1/320x480/M_xYoSil6v5Toy3X.mp4?tag=19"
+                  },
+                  {
+                    "bitrate": 950000,
+                    "content_type": "video/mp4",
+                    "url": "https://video.twimg.com/ext_tw_video/2040024096235556864/pu/vid/avc1/480x720/AmmE7aW8RvL5vTxD.mp4?tag=19"
+                  },
+                  {
+                    "bitrate": 2176000,
+                    "content_type": "video/mp4",
+                    "url": "https://video.twimg.com/ext_tw_video/2040024096235556864/pu/vid/avc1/720x1080/6gFBgnO0equcW0RJ.mp4?tag=19"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [
+            {
+              "indices": [
+                1841,
+                1850
+              ],
+              "text": "iPhone15"
+            },
+            {
+              "indices": [
+                1851,
+                1860
+              ],
+              "text": "iPhone13"
+            },
+            {
+              "indices": [
+                1861,
+                1867
+              ],
+              "text": "Apple"
+            },
+            {
+              "indices": [
+                1868,
+                1879
+              ],
+              "text": "TechReview"
+            },
+            {
+              "indices": [
+                1880,
+                1890
+              ],
+              "text": "SalsaTech"
+            }
+          ],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039929230281351356",
+        "url": "https://x.com/rp4296/status/2039929230281351356",
+        "twitterUrl": "https://twitter.com/rp4296/status/2039929230281351356",
+        "text": "Extremely disappointed with @Cashify.\n\nBooked battery replacement for my iPhone 14 Pro Max, but your technician damaged my display during service.\n\nNeed immediate resolution &amp; free repair.\n\nOrder ID: CSPO89I907190\n#Cashify #CustomerExperience #ConsumerRights",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 34,
+        "createdAt": "Fri Apr 03 04:53:23 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039929230281351356",
+        "displayTextRange": [
+          0,
+          262
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "rp4296",
+          "url": "https://x.com/rp4296",
+          "twitterUrl": "https://twitter.com/rp4296",
+          "id": "262497490",
+          "name": "rakshit pandey",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/1131152908097998849/2Y3caxEm_normal.jpg",
+          "coverPicture": "",
+          "description": "",
+          "location": "Delhi ",
+          "followers": 6,
+          "following": 17,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Tue Mar 08 04:36:50 +0000 2011",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 11,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 0,
+          "statusesCount": 59,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [
+            {
+              "indices": [
+                218,
+                226
+              ],
+              "text": "Cashify"
+            },
+            {
+              "indices": [
+                227,
+                246
+              ],
+              "text": "CustomerExperience"
+            },
+            {
+              "indices": [
+                247,
+                262
+              ],
+              "text": "ConsumerRights"
+            }
+          ],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": [
+            {
+              "id_str": "719073871",
+              "indices": [
+                28,
+                36
+              ],
+              "name": "ifeanyi nnebedum",
+              "screen_name": "cashify"
+            }
+          ]
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039687284723966178",
+        "url": "https://x.com/trashesnif/status/2039687284723966178",
+        "twitterUrl": "https://twitter.com/trashesnif/status/2039687284723966178",
+        "text": "no filter no edit just a pure raw camera from iphone 15 pro max that i bought 2 or 3 years ago https://t.co/yxn9lT6Oaw",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 1,
+        "quoteCount": 0,
+        "viewCount": 196,
+        "createdAt": "Thu Apr 02 12:51:58 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039687284723966178",
+        "displayTextRange": [
+          0,
+          94
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "trashesnif",
+          "url": "https://x.com/trashesnif",
+          "twitterUrl": "https://twitter.com/trashesnif",
+          "id": "1395829961152339970",
+          "name": "🅰️",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2041752434763296770/thJhZ6LE_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1395829961152339970/1770744122",
+          "description": "",
+          "location": "",
+          "followers": 26,
+          "following": 19,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": false,
+          "createdAt": "Fri May 21 19:53:01 +0000 2021",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 1353,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 198,
+          "statusesCount": 631,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "people be shared way too much in here and so do i",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/yxn9lT6Oaw",
+              "expanded_url": "https://twitter.com/trashesnif/status/2039687284723966178/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": []
+                },
+                "orig": {
+                  "faces": []
+                }
+              },
+              "id_str": "2039687242604773376",
+              "indices": [
+                95,
+                118
+              ],
+              "media_key": "3_2039687242604773376",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxObL2MWoAACgACHE5sx1raYOIAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHE5svYxagAAKAAIcTmzHWtpg4gAA",
+                  "media_key": "3_2039687242604773376"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HE5svYxagAA-pRN.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 645,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 958
+                  },
+                  {
+                    "h": 1152,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 704
+                  },
+                  {
+                    "h": 1313,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 624
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1024,
+                    "x": 51,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 2048,
+                "width": 1152
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 1152
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/yxn9lT6Oaw"
+            },
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/yxn9lT6Oaw",
+              "expanded_url": "https://twitter.com/trashesnif/status/2039687284723966178/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": []
+                },
+                "orig": {
+                  "faces": []
+                }
+              },
+              "id_str": "2039687242583855105",
+              "indices": [
+                95,
+                118
+              ],
+              "media_key": "3_2039687242583855105",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxObL2LG1ABCgACHE5sx1raYOIAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHE5svYsbUAEKAAIcTmzHWtpg4gAA",
+                  "media_key": "3_2039687242583855105"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HE5svYsbUAEbnGQ.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 645,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 958
+                  },
+                  {
+                    "h": 1152,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 704
+                  },
+                  {
+                    "h": 1313,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 624
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1024,
+                    "x": 51,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 2048,
+                "width": 1152
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 1152
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/yxn9lT6Oaw"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039630158789824869",
+        "url": "https://x.com/jbschroeter2017/status/2039630158789824869",
+        "twitterUrl": "https://twitter.com/jbschroeter2017/status/2039630158789824869",
+        "text": "I bought the MacBook neo to replace my MacBook Air m1. I have to admit the speed of the neo is so much faster than the m1. With migration assistance transferring all my data and files took 30-45 minutes. Best purchase #macbookneo #apple",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 119,
+        "createdAt": "Thu Apr 02 09:04:59 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039630158789824869",
+        "displayTextRange": [
+          0,
+          236
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "jbschroeter2017",
+          "url": "https://x.com/jbschroeter2017",
+          "twitterUrl": "https://twitter.com/jbschroeter2017",
+          "id": "923983214896656385",
+          "name": "JB Schroeter",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/924033002358833158/70mlOPP-_normal.jpg",
+          "coverPicture": "",
+          "description": "",
+          "location": "",
+          "followers": 79,
+          "following": 168,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Fri Oct 27 18:42:19 +0000 2017",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 1628,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 141,
+          "statusesCount": 2847,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "I have a masters degree in developmental psychology. I work full time as a state employee. This whole adulting thing is far more than what I expected 🤣🤣🤣🤣🤣",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [
+            {
+              "indices": [
+                218,
+                229
+              ],
+              "text": "macbookneo"
+            },
+            {
+              "indices": [
+                230,
+                236
+              ],
+              "text": "apple"
+            }
+          ],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039548587676434677",
+        "url": "https://x.com/itsmeAshwin_/status/2039548587676434677",
+        "twitterUrl": "https://twitter.com/itsmeAshwin_/status/2039548587676434677",
+        "text": "Facing battery issues on my Acer Predator Helios 300 for the past 2 years. Unable to get an original battery as no service center has it. Disappointed with Acer India’s after-sales support. Need urgent help with genuine battery replacement. @Acer_India  @VenomsTech \n@Acer Part 1",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 21,
+        "createdAt": "Thu Apr 02 03:40:50 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039548587676434677",
+        "displayTextRange": [
+          0,
+          279
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "itsmeAshwin_",
+          "url": "https://x.com/itsmeAshwin_",
+          "twitterUrl": "https://twitter.com/itsmeAshwin_",
+          "id": "1222114119928561665",
+          "name": "Ashwin Shankar",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/1307764125632622593/hYiwNR4e_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1222114119928561665/1604164928",
+          "description": "",
+          "location": "Varanasi, India",
+          "followers": 7,
+          "following": 46,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": true,
+          "createdAt": "Tue Jan 28 11:08:24 +0000 2020",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 4113,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 0,
+          "statusesCount": 9,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": [
+            {
+              "id_str": "99878596",
+              "indices": [
+                241,
+                252
+              ],
+              "name": "Acer India",
+              "screen_name": "Acer_India"
+            },
+            {
+              "id_str": "1271843257123627008",
+              "indices": [
+                254,
+                265
+              ],
+              "name": "Venom's Tech",
+              "screen_name": "VenomsTech"
+            },
+            {
+              "id_str": "11511",
+              "indices": [
+                267,
+                272
+              ],
+              "name": "Acer",
+              "screen_name": "Acer"
+            }
+          ]
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039481656533561664",
+        "url": "https://x.com/yannmasoch/status/2039481656533561664",
+        "twitterUrl": "https://twitter.com/yannmasoch/status/2039481656533561664",
+        "text": "I've been quietly working on Distropy, an open-source LLM inference server written in Rust.\n\nWhile running some final optimization tests with VS Code + GitHub Chat (which loves sending huge context even on empty chats), I got this result and had to share:\n\nModel: Qwen3-0.6B-Q4_K_M\nGPU: RTX 4070 12GB\nQuery: \"what is vue\"\n\nFirst request:\nPrefill: 12,007 tokens in 742 ms → 16,181 tokens/sec\n\nSecond request (same conversation):\nPrefill: only 243 tokens\nprefix_cached: 12,003 tokens\nPrefill time: 4 ms → 60,750 tokens/sec\n\nTotal end-to-end latency: 175 ms\n\nI went from 10–20 seconds of painful prefill on every request down to under 200ms total. The difference is night and day.\n\nThe key was getting KV prefix caching working properly with llama.cpp. Once the large static prefix (system prompt + tools) is cached, subsequent requests become extremely cheap.\n\nI'm getting close to an initial release, and seeing this kind of performance gives me a lot of confidence.\nWould love to hear your thoughts — especially if you've also struggled with massive repeated tool schemas and context from IDEs.\n\nLet me know if you'd be interested in trying it when it's ready.",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 1,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 47,
+        "createdAt": "Wed Apr 01 23:14:53 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039481656533561664",
+        "displayTextRange": [
+          0,
+          263
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "yannmasoch",
+          "url": "https://x.com/yannmasoch",
+          "twitterUrl": "https://twitter.com/yannmasoch",
+          "id": "274930777",
+          "name": "Yann Masoch",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/1649480019037782017/w-r8SbhM_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/274930777/1768529377",
+          "description": "",
+          "location": "Palo Alto, CA",
+          "followers": 560,
+          "following": 137,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Thu Mar 31 09:11:20 +0000 2011",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 6577,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 1254,
+          "statusesCount": 5030,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "MIT UX | Eng | Building @distropyAI | AI founder pivoting hard | Now cooking something bigger",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": [
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      24,
+                      35
+                    ],
+                    "name": "",
+                    "screen_name": "distropyAI"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "display_url": "pic.twitter.com/MXmgGyWbrW",
+              "expanded_url": "https://twitter.com/yannmasoch/status/2039481656533561664/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": []
+                },
+                "orig": {
+                  "faces": []
+                }
+              },
+              "id_str": "2039481324889948160",
+              "indices": [
+                264,
+                287
+              ],
+              "media_key": "3_2039481324889948160",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxNsXWYG8AACgACHE2xws+bsUAAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHE2xdZgbwAAKAAIcTbHCz5uxQAAA",
+                  "media_key": "3_2039481324889948160"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HE2xdZgbwAAYyjD.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 290,
+                    "w": 518,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 290,
+                    "w": 290,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 290,
+                    "w": 254,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 290,
+                    "w": 145,
+                    "x": 50,
+                    "y": 0
+                  },
+                  {
+                    "h": 290,
+                    "w": 980,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 290,
+                "width": 980
+              },
+              "sizes": {
+                "large": {
+                  "h": 290,
+                  "w": 980
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/MXmgGyWbrW"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039440358044778753",
+        "url": "https://x.com/samu2kdotcom/status/2039440358044778753",
+        "twitterUrl": "https://twitter.com/samu2kdotcom/status/2039440358044778753",
+        "text": "The most useful feature I see on the @GeminiApp is to paste a youtube link and ask for a summary, saves a lot of time and it's easier to parse.\nIt's also pretty fast, you can tell their TPUs go brrrr...\nI also set up the Gemini system prompt with a private link to a Google Sheets with my budget, so I can ask questions about it.\nI also use it to create tasks (Google Tasks/Google Keep).\nI rarely use the feature of taking a screenshot on my Pixel phone to ask questions about it.\nIn summary: is it worth it to use a Pixel 9 Pro XL? Sure, for the camera, the extra battery, and extra screen size to play Balatro and Polytopia (lol).\nBut is it worth it for the AI features? Nah.\nIn general, I'm still using ChatGPT/Codex, pretty good price/quality, and only Gemini for stuff that's integrated with the Google ecosystem.\nI still think that making you run out of tokens is a great business model, but it's not for me, even with my own programming projects.",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 45,
+        "createdAt": "Wed Apr 01 20:30:46 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039440358044778753",
+        "displayTextRange": [
+          0,
+          280
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "samu2kdotcom",
+          "url": "https://x.com/samu2kdotcom",
+          "twitterUrl": "https://twitter.com/samu2kdotcom",
+          "id": "209995323",
+          "name": "Samuel Muñoz",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2016084362182250496/PBzxc8yl_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/209995323/1756301513",
+          "description": "",
+          "location": "Spain",
+          "followers": 221,
+          "following": 533,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Sat Oct 30 10:01:45 +0000 2010",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 6328,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 17,
+          "statusesCount": 344,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "2034547281882431702"
+          ],
+          "profile_bio": {
+            "description": "🇪🇸 Software Engineer. DevOps/SRE. Calisthenics, Trail Running, BJJ.\nJohn 5:41-44",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "urls": [],
+          "user_mentions": [
+            {
+              "id_str": "1806359170830172162",
+              "indices": [
+                37,
+                47
+              ],
+              "name": "Google Gemini",
+              "screen_name": "GeminiApp"
+            }
+          ]
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039395397211136132",
+        "url": "https://x.com/Absolute_Kganki/status/2039395397211136132",
+        "twitterUrl": "https://twitter.com/Absolute_Kganki/status/2039395397211136132",
+        "text": "The old man wanted to get my an iPhone 16 and I lied to him that iPhone 16 isn’t a better option because it doesn’t do screen recording that I’ll need to increase my Twitter (X) impressions. I said an iPhone 17 Pro Max will do, so he said you got it kid. Today I got him a Real Madrid T-shirt as a thank you note, he says he wants the Bafana Bafana one once the FIFA World Cup starts, his birthday is on the 21st of June. He will have a beautiful birthday present very soon. 💙😅🇿🇦",
+        "source": "Twitter for iPhone",
+        "retweetCount": 13,
+        "replyCount": 12,
+        "likeCount": 353,
+        "quoteCount": 1,
+        "viewCount": 49404,
+        "createdAt": "Wed Apr 01 17:32:07 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 13,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039395397211136132",
+        "displayTextRange": [
+          0,
+          277
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "Absolute_Kganki",
+          "url": "https://x.com/Absolute_Kganki",
+          "twitterUrl": "https://twitter.com/Absolute_Kganki",
+          "id": "1416678335581655041",
+          "name": "Kganki Chávez Mphahlele 🇿🇦",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2034994160420495364/fLRsqRwL_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/1416678335581655041/1763900510",
+          "description": "",
+          "location": "Ga-Mphahlele, South Africa",
+          "followers": 13077,
+          "following": 1770,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": true,
+          "createdAt": "Sun Jul 18 08:37:03 +0000 2021",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 28042,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 2789,
+          "statusesCount": 31113,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "2037808328332460195"
+          ],
+          "profile_bio": {
+            "description": "@ULvarsity 📚 @realmadriden 🤍 @KaizerChiefs 👑 @ManUtd 👺 Pan-Africanist 🖤 Marxist-Leninist ☭ Enforcer Of The Global South ★ We Will Be Like Che 🇨🇺",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": [
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      0,
+                      10
+                    ],
+                    "name": "",
+                    "screen_name": "ULvarsity"
+                  },
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      13,
+                      26
+                    ],
+                    "name": "",
+                    "screen_name": "realmadriden"
+                  },
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      29,
+                      42
+                    ],
+                    "name": "",
+                    "screen_name": "KaizerChiefs"
+                  },
+                  {
+                    "id_str": "0",
+                    "indices": [
+                      45,
+                      52
+                    ],
+                    "name": "",
+                    "screen_name": "ManUtd"
+                  }
+                ]
+              },
+              "url": {
+                "urls": [
+                  {
+                    "display_url": "facebook.com/share/14Gizgye…",
+                    "expanded_url": "https://www.facebook.com/share/14GizgyeGrG/",
+                    "indices": [
+                      0,
+                      23
+                    ],
+                    "url": "https://t.co/kZIMbpIXnR"
+                  }
+                ]
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/B6FfngL0YQ",
+              "expanded_url": "https://twitter.com/Absolute_Kganki/status/2039395397211136132/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": [
+                    {
+                      "h": 158,
+                      "w": 158,
+                      "x": 536,
+                      "y": 1052
+                    },
+                    {
+                      "h": 310,
+                      "w": 310,
+                      "x": 492,
+                      "y": 360
+                    }
+                  ]
+                },
+                "orig": {
+                  "faces": [
+                    {
+                      "h": 158,
+                      "w": 158,
+                      "x": 536,
+                      "y": 1052
+                    },
+                    {
+                      "h": 310,
+                      "w": 310,
+                      "x": 492,
+                      "y": 360
+                    }
+                  ]
+                }
+              },
+              "id_str": "2039395360192286720",
+              "indices": [
+                278,
+                301
+              ],
+              "media_key": "3_2039395360192286720",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxNY0Zg11AACgACHE1jTv9WIIQAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHE1jRmDXUAAKAAIcTWNO/1YghAAA",
+                  "media_key": "3_2039395360192286720"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HE1jRmDXUAAcKsT.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 645,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 446
+                  },
+                  {
+                    "h": 1152,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 192
+                  },
+                  {
+                    "h": 1313,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 112
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1024,
+                    "x": 128,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 2048,
+                "width": 1152
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 1152
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/B6FfngL0YQ"
+            },
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/B6FfngL0YQ",
+              "expanded_url": "https://twitter.com/Absolute_Kganki/status/2039395397211136132/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": [
+                    {
+                      "h": 200,
+                      "w": 200,
+                      "x": 176,
+                      "y": 980
+                    },
+                    {
+                      "h": 284,
+                      "w": 284,
+                      "x": 368,
+                      "y": 450
+                    },
+                    {
+                      "h": 264,
+                      "w": 264,
+                      "x": 134,
+                      "y": 48
+                    },
+                    {
+                      "h": 312,
+                      "w": 312,
+                      "x": 328,
+                      "y": 110
+                    }
+                  ]
+                },
+                "orig": {
+                  "faces": [
+                    {
+                      "h": 200,
+                      "w": 200,
+                      "x": 176,
+                      "y": 980
+                    },
+                    {
+                      "h": 284,
+                      "w": 284,
+                      "x": 368,
+                      "y": 450
+                    },
+                    {
+                      "h": 264,
+                      "w": 264,
+                      "x": 134,
+                      "y": 48
+                    },
+                    {
+                      "h": 312,
+                      "w": 312,
+                      "x": 328,
+                      "y": 110
+                    }
+                  ]
+                }
+              },
+              "id_str": "2039395360238632960",
+              "indices": [
+                278,
+                301
+              ],
+              "media_key": "3_2039395360238632960",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxNY0ZjmoAACgACHE1jTv9WIIQAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHE1jRmOagAAKAAIcTWNO/1YghAAA",
+                  "media_key": "3_2039395360238632960"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HE1jRmOagAA-7zx.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 645,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1152,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1313,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1024,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1152,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 2048,
+                "width": 1152
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 1152
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/B6FfngL0YQ"
+            },
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/B6FfngL0YQ",
+              "expanded_url": "https://twitter.com/Absolute_Kganki/status/2039395397211136132/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": [
+                    {
+                      "h": 266,
+                      "w": 266,
+                      "x": 826,
+                      "y": 1036
+                    }
+                  ]
+                },
+                "orig": {
+                  "faces": [
+                    {
+                      "h": 266,
+                      "w": 266,
+                      "x": 826,
+                      "y": 1036
+                    }
+                  ]
+                }
+              },
+              "id_str": "2039395360137768960",
+              "indices": [
+                278,
+                301
+              ],
+              "media_key": "3_2039395360137768960",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxNY0Zdl3AACgACHE1jTv9WIIQAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHE1jRl2XcAAKAAIcTWNO/1YghAAA",
+                  "media_key": "3_2039395360137768960"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HE1jRl2XcAAsrX9.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 1147,
+                    "w": 2048,
+                    "x": 0,
+                    "y": 901
+                  },
+                  {
+                    "h": 2048,
+                    "w": 2048,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1796,
+                    "x": 252,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1024,
+                    "x": 1024,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 2048,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 2048,
+                "width": 2048
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 2048
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/B6FfngL0YQ"
+            },
+            {
+              "allow_download_status": {
+                "allow_download": true
+              },
+              "display_url": "pic.twitter.com/B6FfngL0YQ",
+              "expanded_url": "https://twitter.com/Absolute_Kganki/status/2039395397211136132/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "large": {
+                  "faces": []
+                },
+                "orig": {
+                  "faces": []
+                }
+              },
+              "id_str": "2039395360272195584",
+              "indices": [
+                278,
+                301
+              ],
+              "media_key": "3_2039395360272195584",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxNY0ZlmqAACgACHE1jTv9WIIQAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHE1jRmWaoAAKAAIcTWNO/1YghAAA",
+                  "media_key": "3_2039395360272195584"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HE1jRmWaoAA9ET6.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 1147,
+                    "w": 2048,
+                    "x": 0,
+                    "y": 502
+                  },
+                  {
+                    "h": 2048,
+                    "w": 2048,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1796,
+                    "x": 252,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1024,
+                    "x": 768,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 2048,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 2048,
+                "width": 2048
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 2048
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/B6FfngL0YQ"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2039077882321092824",
+        "url": "https://x.com/rajdhruv7861/status/2039077882321092824",
+        "twitterUrl": "https://twitter.com/rajdhruv7861/status/2039077882321092824",
+        "text": "I bought a Pixel 9 for ₹80,000 in 2024, and now the display has suddenly developed five green lines without any damage, which clearly indicates a manufacturing defect.When I contacted support (Case ID: 4-6280000040939). #pixel #pixel9 #googlepixel\n#google https://t.co/mJHE5S4WJ9",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 2,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 74,
+        "createdAt": "Tue Mar 31 20:30:26 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2039077882321092824",
+        "displayTextRange": [
+          0,
+          255
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "rajdhruv7861",
+          "url": "https://x.com/rajdhruv7861",
+          "twitterUrl": "https://twitter.com/rajdhruv7861",
+          "id": "3948477434",
+          "name": "Dhruv thakur",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2039083059568599040/sEJcTE_1_normal.jpg",
+          "coverPicture": "https://pbs.twimg.com/profile_banners/3948477434/1774990260",
+          "description": "",
+          "location": "",
+          "followers": 2,
+          "following": 28,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Mon Oct 19 15:53:26 +0000 2015",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 4,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 1,
+          "statusesCount": 3,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "I love $$$$\nWant to be a biggest business\nlovehater|f©©die|Player",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "extendedEntities": {
+          "media": [
+            {
+              "display_url": "pic.twitter.com/mJHE5S4WJ9",
+              "expanded_url": "https://twitter.com/rajdhruv7861/status/2039077882321092824/photo/1",
+              "ext_media_availability": {
+                "status": "Available"
+              },
+              "features": {
+                "all": {
+                  "tags": [
+                    {
+                      "name": "Sundar Pichai",
+                      "screen_name": "sundarpichai",
+                      "type": "user",
+                      "user_id": "14130366"
+                    }
+                  ]
+                },
+                "large": {
+                  "faces": []
+                },
+                "orig": {
+                  "faces": []
+                }
+              },
+              "id_str": "2039077869721382912",
+              "indices": [
+                256,
+                279
+              ],
+              "media_key": "3_2039077869721382912",
+              "media_results": {
+                "id": "QXBpTWVkaWFSZXN1bHRzOgwAAQoAARxMQoTeGnAACgACHExCh80awNgAAA==",
+                "result": {
+                  "__typename": "ApiMedia",
+                  "id": "QXBpTWVkaWE6DAABCgABHExChN4acAAKAAIcTEKHzRrA2AAA",
+                  "media_key": "3_2039077869721382912"
+                }
+              },
+              "media_url_https": "https://pbs.twimg.com/media/HExChN4acAAINFs.jpg",
+              "original_info": {
+                "focus_rects": [
+                  {
+                    "h": 860,
+                    "w": 1536,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1536,
+                    "w": 1536,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 1751,
+                    "w": 1536,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1024,
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "h": 2048,
+                    "w": 1536,
+                    "x": 0,
+                    "y": 0
+                  }
+                ],
+                "height": 2048,
+                "width": 1536
+              },
+              "sizes": {
+                "large": {
+                  "h": 2048,
+                  "w": 1536
+                }
+              },
+              "type": "photo",
+              "url": "https://t.co/mJHE5S4WJ9"
+            }
+          ]
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [
+            {
+              "indices": [
+                220,
+                226
+              ],
+              "text": "pixel"
+            },
+            {
+              "indices": [
+                227,
+                234
+              ],
+              "text": "pixel9"
+            },
+            {
+              "indices": [
+                235,
+                247
+              ],
+              "text": "googlepixel"
+            },
+            {
+              "indices": [
+                248,
+                255
+              ],
+              "text": "google"
+            }
+          ],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2038970302118433067",
+        "url": "https://x.com/Flohairs/status/2038970302118433067",
+        "twitterUrl": "https://twitter.com/Flohairs/status/2038970302118433067",
+        "text": "I really got served hottt! \n\nI kept my phone inside my bag, wanting to carry the bag inside so I could keep it at the front of the exam hall, but one of the invigilators stopped me and said I should keep it outside. \n\nI did few calculations in my head like \"before 1 hr I should be done now,\" so I went back outside and dropped my bag. My friend also kept her bag beside mine.\n\nBy the time we finished the exam and went to where we kept our bags to carry them, it was as if I was seeing double or I went blind for those seconds. Our bags had vanished into thin air. \n\nMy friend's iPhone 14 was gone in the blink of an eye and my most prized Android phone., the one I dey guide with my life was also gone😭.\n\nMy friend almost went crazy, and I was being the bigger person until people started asking questions and I couldn’t help but cry while explaining.\n\nIt happened on the first day of my exams, so I had to move fast. Since I had also lost all my hard materials, I had to rely strictly on soft materials. \n\nI visited some friends for help; I got a friend to borrow me her laptop, logged into my WhatsApp, and asked my coursemates to send me our course materials so I could save them on the laptop. \n\nI later got another friend to borrow me his second phone just to stay connected. In conclusion, i survived 🥹",
+        "source": "Twitter for iPhone",
+        "retweetCount": 1,
+        "replyCount": 0,
+        "likeCount": 15,
+        "quoteCount": 0,
+        "viewCount": 405,
+        "createdAt": "Tue Mar 31 13:22:56 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2038970302118433067",
+        "displayTextRange": [
+          0,
+          278
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "Flohairs",
+          "url": "https://x.com/Flohairs",
+          "twitterUrl": "https://twitter.com/Flohairs",
+          "id": "1964248609999704065",
+          "name": "Alabama",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/2017363694166880256/Jf9zU1lC_normal.jpg",
+          "coverPicture": "",
+          "description": "",
+          "location": "Lagos, Nigeria",
+          "followers": 1626,
+          "following": 1628,
+          "status": "",
+          "canDm": true,
+          "canMediaTag": true,
+          "createdAt": "Sat Sep 06 08:46:04 +0000 2025",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 18745,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 150,
+          "statusesCount": 7402,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [
+            "2032473230624354460"
+          ],
+          "profile_bio": {
+            "description": "everyday gists. real life stories. daily thoughts. God fearing|Christian|Bsc holder|Single|Kdrama lover 🥰|Messi|30bg👑",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": {
+          "type": "tweet",
+          "id": "2038624367265944046",
+          "url": "https://x.com/arojinle1/status/2038624367265944046",
+          "twitterUrl": "https://twitter.com/arojinle1/status/2038624367265944046",
+          "text": "Those of you that got served breakfast (breakup) during the exam period, how did you navigate it?",
+          "source": "Twitter for iPhone",
+          "retweetCount": 55,
+          "replyCount": 134,
+          "likeCount": 448,
+          "quoteCount": 58,
+          "viewCount": 80666,
+          "createdAt": "Mon Mar 30 14:28:19 +0000 2026",
+          "lang": "en",
+          "bookmarkCount": 21,
+          "isReply": false,
+          "inReplyToId": null,
+          "conversationId": "2038624367265944046",
+          "displayTextRange": [
+            0,
+            97
+          ],
+          "inReplyToUserId": null,
+          "inReplyToUsername": null,
+          "author": {
+            "type": "user",
+            "userName": "arojinle1",
+            "url": "https://x.com/arojinle1",
+            "twitterUrl": "https://twitter.com/arojinle1",
+            "id": "893861200123056128",
+            "name": "Arojinle",
+            "isVerified": false,
+            "isBlueVerified": true,
+            "verifiedType": null,
+            "profilePicture": "https://pbs.twimg.com/profile_images/1751142017374044160/w-WV4oGn_normal.jpg",
+            "coverPicture": "https://pbs.twimg.com/profile_banners/893861200123056128/1706339765",
+            "description": "",
+            "location": "",
+            "followers": 244993,
+            "following": 1355,
+            "status": "",
+            "canDm": true,
+            "canMediaTag": true,
+            "createdAt": "Sat Aug 05 15:48:12 +0000 2017",
+            "entities": {
+              "description": {
+                "urls": []
+              }
+            },
+            "fastFollowersCount": 0,
+            "favouritesCount": 142597,
+            "hasCustomTimelines": true,
+            "isTranslator": false,
+            "mediaCount": 6754,
+            "statusesCount": 150902,
+            "withheldInCountries": [],
+            "possiblySensitive": false,
+            "pinnedTweetIds": [],
+            "profile_bio": {
+              "description": "Yorùbá Pọ́nńbélé | Researcher | Wildlife 🐆 🐘| Conservation 🌍| MSc. Membrane Biochemistry & Biotechnology🧬| DM for Business | Snake Man",
+              "entities": {
+                "description": {
+                  "hashtags": [],
+                  "symbols": [],
+                  "urls": [],
+                  "user_mentions": []
+                },
+                "url": {
+                  "urls": [
+                    {
+                      "display_url": "youtube.com/@arojinle1",
+                      "expanded_url": "https://youtube.com/@arojinle1",
+                      "indices": [
+                        0,
+                        23
+                      ],
+                      "url": "https://t.co/XKB3UqZQdf"
+                    }
+                  ]
+                }
+              }
+            },
+            "isAutomated": false,
+            "automatedBy": null
+          },
+          "card": null,
+          "entities": {
+            "hashtags": [],
+            "symbols": [],
+            "timestamps": [],
+            "urls": [],
+            "user_mentions": []
+          },
+          "quoted_tweet": null,
+          "retweeted_tweet": null,
+          "isLimitedReply": false,
+          "communityInfo": null,
+          "article": null
+        },
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2038854981508366791",
+        "url": "https://x.com/jonclegg77/status/2038854981508366791",
+        "twitterUrl": "https://twitter.com/jonclegg77/status/2038854981508366791",
+        "text": "My vibe coding addiction has killed my M2 MacBook Air with 16 gigs. So I got a new M5 with 32 gigs. \n\nHoly shit!! I haven't found anything that'll slow this down yet. Building Docker images while running Android simulators and iOS simulators doesn't even blink!!",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 0,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 78,
+        "createdAt": "Tue Mar 31 05:44:42 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2038854981508366791",
+        "displayTextRange": [
+          0,
+          262
+        ],
+        "inReplyToUserId": null,
+        "inReplyToUsername": null,
+        "author": {
+          "type": "user",
+          "userName": "jonclegg77",
+          "url": "https://x.com/jonclegg77",
+          "twitterUrl": "https://twitter.com/jonclegg77",
+          "id": "1956182629910548480",
+          "name": "Jon Clegg",
+          "isVerified": false,
+          "isBlueVerified": true,
+          "verifiedType": null,
+          "profilePicture": "https://pbs.twimg.com/profile_images/1956205389239709699/2oKKhdDR_normal.jpg",
+          "coverPicture": "",
+          "description": "",
+          "location": "Austin, TX",
+          "followers": 400,
+          "following": 121,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Fri Aug 15 02:34:25 +0000 2025",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 3105,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 102,
+          "statusesCount": 1743,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "Software engineer for 30 years, live in Austin, interested in Self Driving and AI",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": []
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      },
+      {
+        "type": "tweet",
+        "id": "2038540893423292652",
+        "url": "https://x.com/grvkhanna20/status/2038540893423292652",
+        "twitterUrl": "https://twitter.com/grvkhanna20/status/2038540893423292652",
+        "text": "@OPPOIndia i feel very strange. I am using samsung s22 ultra and it has pause feature in dual video recording mode. I bought oppo find x9 pro. But no option to pause video recording in dual camera recording mode.",
+        "source": "Twitter for iPhone",
+        "retweetCount": 0,
+        "replyCount": 1,
+        "likeCount": 0,
+        "quoteCount": 0,
+        "viewCount": 281,
+        "createdAt": "Mon Mar 30 08:56:37 +0000 2026",
+        "lang": "en",
+        "bookmarkCount": 0,
+        "isReply": false,
+        "inReplyToId": null,
+        "conversationId": "2038540893423292652",
+        "displayTextRange": [
+          0,
+          212
+        ],
+        "inReplyToUserId": "2313218292",
+        "inReplyToUsername": "OPPOIndia",
+        "author": {
+          "type": "user",
+          "userName": "grvkhanna20",
+          "url": "https://x.com/grvkhanna20",
+          "twitterUrl": "https://twitter.com/grvkhanna20",
+          "id": "1623002018989363200",
+          "name": "Gaurav",
+          "isVerified": false,
+          "isBlueVerified": false,
+          "verifiedType": null,
+          "profilePicture": "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png",
+          "coverPicture": "",
+          "description": "",
+          "location": "",
+          "followers": 1,
+          "following": 24,
+          "status": "",
+          "canDm": false,
+          "canMediaTag": true,
+          "createdAt": "Tue Feb 07 16:53:49 +0000 2023",
+          "entities": {
+            "description": {
+              "urls": []
+            }
+          },
+          "fastFollowersCount": 0,
+          "favouritesCount": 4,
+          "hasCustomTimelines": true,
+          "isTranslator": false,
+          "mediaCount": 6,
+          "statusesCount": 102,
+          "withheldInCountries": [],
+          "possiblySensitive": false,
+          "pinnedTweetIds": [],
+          "profile_bio": {
+            "description": "",
+            "entities": {
+              "description": {
+                "hashtags": [],
+                "symbols": [],
+                "urls": [],
+                "user_mentions": []
+              }
+            }
+          },
+          "isAutomated": false,
+          "automatedBy": null
+        },
+        "card": null,
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "timestamps": [],
+          "urls": [],
+          "user_mentions": [
+            {
+              "id_str": "2313218292",
+              "indices": [
+                0,
+                10
+              ],
+              "name": "OPPO India",
+              "screen_name": "OPPOIndia"
+            }
+          ]
+        },
+        "quoted_tweet": null,
+        "retweeted_tweet": null,
+        "isLimitedReply": false,
+        "communityInfo": null,
+        "article": null
+      }
+    ],
+    "has_next_page": true,
+    "next_cursor": "DAADDAABCgABHFg4fD4bQbEKAAIcSlokVJpQ7AAIAAIAAAACCAADAAAAAAgABAAAAAAKAAUcWDkr4gAnEAoABhxYOSvh_9jwAAA",
+    "createdAt": "2026-04-10T03:31:20.837000",
+    "updatedAt": "2026-04-10T03:31:20.837000",
+    "__v": 0
+  }
+]
