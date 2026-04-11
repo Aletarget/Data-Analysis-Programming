@@ -7,7 +7,7 @@ Descripción: Procesa los JSON crudos de datalake_bronze y los convierte
     - Elimina campos con valor None / null
     - Convierte tipos de datos (fechas a datetime, números a int/float)
     - Normaliza campos anidados simples a columnas planas
-    - Escribe un Parquet por fuente: webscraping.parquet / twitter.parquet
+    - Escribe un Parquet por fuente con nomenclatura {topic}_processed_YYYYMMDD_HHMMSS.parquet
 """
 
 from __future__ import annotations
@@ -22,15 +22,15 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 
 log = logging.getLogger(__name__)
 
 # ──────────────────────────────────────────────
 # Configuración
 # ──────────────────────────────────────────────
-BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH", "/opt/airflow/datalake_bronze")
-SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH", "/opt/airflow/datalake_silver")
+BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH")
+SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH")
 
 DEFAULT_ARGS = {
     "owner":            "data-team",
@@ -42,18 +42,17 @@ DEFAULT_ARGS = {
 
 
 # ──────────────────────────────────────────────
-# Helpers de transformación
+# Helpers
 # ──────────────────────────────────────────────
 def load_latest_bronze(source: str) -> list[dict]:
-    """
-    Carga el JSON más reciente de datalake_bronze/<source>/.
-    Busca el archivo con la fecha más alta en el nombre.
-    """
-    bronze_dir = Path(BRONZE_BASE_PATH) / source
-    json_files = sorted(bronze_dir.glob("*.json"), reverse=True)
+    """Busca el JSON más reciente que tenga el prefijo source_ en el nombre."""
+    bronze_dir = Path(BRONZE_BASE_PATH)
+    json_files = sorted(bronze_dir.glob(f"{source}_*.json"), reverse=True)
 
     if not json_files:
-        raise FileNotFoundError(f"No hay archivos JSON en {bronze_dir}")
+        raise FileNotFoundError(
+            f"No hay archivos JSON con prefijo '{source}_' en {bronze_dir}"
+        )
 
     latest = json_files[0]
     log.info("Leyendo Bronze: %s", latest)
@@ -65,22 +64,20 @@ def load_latest_bronze(source: str) -> list[dict]:
 def clean_document(doc: dict) -> dict:
     """
     Limpia un documento individual:
-      - Elimina claves con valor None
+      - Elimina claves con valor None o string vacío
       - Convierte strings ISO a datetime donde corresponda
       - Intenta convertir strings numéricos a int/float
+      - Aplana dicts anidados un nivel con prefijo key_subkey
     """
     cleaned = {}
     for key, value in doc.items():
 
-        # Eliminar nulos
         if value is None:
             continue
 
-        # Strings vacíos → omitir
         if isinstance(value, str) and value.strip() == "":
             continue
 
-        # Intentar parsear fechas ISO (ej. "2024-01-15T10:30:00")
         if isinstance(value, str) and ("T" in value or "-" in value):
             try:
                 cleaned[key] = datetime.fromisoformat(value)
@@ -88,7 +85,6 @@ def clean_document(doc: dict) -> dict:
             except ValueError:
                 pass
 
-        # Intentar convertir strings numéricos
         if isinstance(value, str):
             try:
                 cleaned[key] = int(value)
@@ -101,7 +97,6 @@ def clean_document(doc: dict) -> dict:
             except ValueError:
                 pass
 
-        # Dicts anidados simples → aplanar con prefijo (un nivel)
         if isinstance(value, dict):
             for sub_key, sub_val in value.items():
                 if sub_val is not None:
@@ -113,10 +108,10 @@ def clean_document(doc: dict) -> dict:
     return cleaned
 
 
-def process_and_write_parquet(source: str) -> str:
+def process_and_write_parquet(source: str, topic: str) -> str:
     """
     Lee el JSON más reciente de bronze, aplica limpieza
-    y escribe datalake_silver/<source>.parquet.
+    y escribe datalake_silver/{topic}_processed_YYYYMMDD_HHMMSS.parquet
     """
     import pandas as pd
 
@@ -129,10 +124,8 @@ def process_and_write_parquet(source: str) -> str:
     log.info("Shape después de limpieza: %s", df.shape)
     log.info("Columnas: %s", list(df.columns))
 
-    # Inferir tipos automáticamente
     df = df.infer_objects()
 
-    # Convertir columnas object que sean fechas
     for col in df.select_dtypes(include="object").columns:
         try:
             df[col] = pd.to_datetime(df[col], utc=True)
@@ -153,24 +146,25 @@ def process_and_write_parquet(source: str) -> str:
 # ──────────────────────────────────────────────
 # Tasks
 # ──────────────────────────────────────────────
-def process_webscraping(**context) -> None:
-    process_and_write_parquet("webscraping", "noticias")
-
-def process_twitter(**context) -> None:
-    process_and_write_parquet("twitter", "tweets")
-
-
 def check_bronze_exists(**context) -> None:
     """Verifica que existan archivos en bronze antes de procesar."""
+    bronze_dir = Path(BRONZE_BASE_PATH)
     for source in ("webscraping", "twitter"):
-        bronze_dir = Path(BRONZE_BASE_PATH) / source
-        files = list(bronze_dir.glob("*.json")) if bronze_dir.exists() else []
+        files = list(bronze_dir.glob(f"{source}_*.json")) if bronze_dir.exists() else []
         if not files:
             raise FileNotFoundError(
-                f"No hay archivos JSON en {bronze_dir}. "
+                f"No hay archivos JSON con prefijo '{source}_' en {bronze_dir}. "
                 f"Ejecuta primero bronze_ingestion_dag."
             )
         log.info("Bronze OK para '%s': %d archivos encontrados.", source, len(files))
+
+
+def process_webscraping(**context) -> None:
+    process_and_write_parquet("webscraping", "noticias")
+
+
+def process_twitter(**context) -> None:
+    process_and_write_parquet("twitter", "tweets")
 
 
 # ══════════════════════════════════════════════
@@ -180,7 +174,7 @@ with DAG(
     dag_id="silver_processing_dag",
     description="Procesa JSON de bronze → Parquet limpio en datalake_silver",
     default_args=DEFAULT_ARGS,
-    schedule="0 7 * * 1,4",   # Corre después del bronze de Twitter (06:00)
+    schedule="0 7 * * 1,4",
     start_date=datetime(2024, 1, 1),
     catchup=False,
     tags=["silver", "procesamiento"],
@@ -201,5 +195,4 @@ with DAG(
         python_callable=process_twitter,
     )
 
-    # Primero verifica, luego procesa ambas fuentes en paralelo
     t1_check >> [t2_webscraping, t3_twitter]
