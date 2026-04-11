@@ -142,7 +142,8 @@ def process_and_write_parquet(source: str) -> str:
     silver_dir = Path(SILVER_BASE_PATH)
     silver_dir.mkdir(parents=True, exist_ok=True)
 
-    dest_file = silver_dir / f"{source}.parquet"
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    dest_file = silver_dir / f"{topic}_processed_{timestamp}.parquet"
     df.to_parquet(dest_file, index=False, engine="pyarrow")
 
     log.info("Silver escrito: %s — %d filas, %d columnas", dest_file, len(df), len(df.columns))
@@ -153,11 +154,10 @@ def process_and_write_parquet(source: str) -> str:
 # Tasks
 # ──────────────────────────────────────────────
 def process_webscraping(**context) -> None:
-    process_and_write_parquet("webscraping")
-
+    process_and_write_parquet("webscraping", "noticias")
 
 def process_twitter(**context) -> None:
-    process_and_write_parquet("twitter")
+    process_and_write_parquet("twitter", "tweets")
 
 
 def check_bronze_exists(**context) -> None:

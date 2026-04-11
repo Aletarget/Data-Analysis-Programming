@@ -65,11 +65,12 @@ def get_client() -> MongoClient:
     return MongoClient(MONGO_URI, serverSelectionTimeoutMS=5_000)
 
 
-def write_bronze(data: list[dict], source: str, execution_date: str) -> str:
-    """Escribe lista de documentos en datalake_bronze/<source>/YYYY-MM-DD.json."""
-    dest_dir = Path(BRONZE_BASE_PATH) / source
+def write_bronze(data: list[dict], source: str, topic: str, execution_date: str) -> str:
+    """Escribe en datalake_bronze/{source}_{topic}_YYYYMMDD_HHMMSS.json"""
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    dest_dir  = Path(BRONZE_BASE_PATH)
     dest_dir.mkdir(parents=True, exist_ok=True)
-    dest_file = dest_dir / f"{execution_date}.json"
+    dest_file = dest_dir / f"{source}_{topic}_{timestamp}.json"
     with open(dest_file, "w", encoding="utf-8") as f:
         json.dump(data, f, cls=MongoEncoder, ensure_ascii=False, indent=2)
     return str(dest_file)
@@ -109,7 +110,7 @@ def extract_webscraping(**context) -> None:
         return
 
     log.info("Documento webscraping extraído — createdAt: %s", doc.get("createdAt"))
-    path = write_bronze([doc], "webscraping", execution_date)
+    path = write_bronze([doc], "webscraping", "noticias", execution_date)
     log.info("Bronze escrito: %s", path)
 
 
@@ -127,7 +128,7 @@ def extract_twitter(**context) -> None:
         return
 
     log.info("Documentos Twitter extraídos: %d", len(docs))
-    path = write_bronze(docs, "twitter", execution_date)
+    path = write_bronze(docs, "twitter", "tweets", execution_date)
     log.info("Bronze escrito: %s", path)
 
 
