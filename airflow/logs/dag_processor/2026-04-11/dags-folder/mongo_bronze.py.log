@@ -1,8 +1,0 @@
-{"timestamp":"2026-04-11T01:30:13.677964Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
-{"timestamp":"2026-04-11T01:30:46.660186Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
-{"timestamp":"2026-04-11T01:31:16.897983Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
-{"timestamp":"2026-04-11T01:31:47.633513Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
-{"timestamp":"2026-04-11T01:32:17.895638Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
-{"timestamp":"2026-04-11T01:32:48.643241Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
-{"timestamp":"2026-04-11T01:33:19.663092Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
-{"timestamp":"2026-04-11T01:33:50.055327Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/mongo_bronze.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
