@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
+from airflow.providers.standard.sensors.filesystem import FileSensor
 
 log = logging.getLogger(__name__)
 
@@ -146,19 +147,6 @@ def process_and_write_parquet(source: str, topic: str) -> str:
 # ──────────────────────────────────────────────
 # Tasks
 # ──────────────────────────────────────────────
-def check_bronze_exists(**context) -> None:
-    """Verifica que existan archivos en bronze antes de procesar."""
-    bronze_dir = Path(BRONZE_BASE_PATH)
-    for source in ("webscraping", "twitter"):
-        files = list(bronze_dir.glob(f"{source}_*.json")) if bronze_dir.exists() else []
-        if not files:
-            raise FileNotFoundError(
-                f"No hay archivos JSON con prefijo '{source}_' en {bronze_dir}. "
-                f"Ejecuta primero bronze_ingestion_dag."
-            )
-        log.info("Bronze OK para '%s': %d archivos encontrados.", source, len(files))
-
-
 def process_webscraping(**context) -> None:
     process_and_write_parquet("webscraping", "noticias")
 
@@ -172,7 +160,7 @@ def process_twitter(**context) -> None:
 # ══════════════════════════════════════════════
 with DAG(
     dag_id="silver_processing_dag",
-    description="Procesa JSON de bronze → Parquet limpio en datalake_silver",
+    description="Detecta nuevos JSON en bronze con FileSensor → procesa a Parquet en silver",
     default_args=DEFAULT_ARGS,
     schedule="0 7 * * 1,4",
     start_date=datetime(2024, 1, 1),
@@ -180,9 +168,26 @@ with DAG(
     tags=["silver", "procesamiento"],
 ) as dag:
 
-    t1_check = PythonOperator(
-        task_id="check_bronze_exists",
-        python_callable=check_bronze_exists,
+    # ── FileSensors ───────────────────────────────────────────────
+    # Esperan a que existan archivos JSON en bronze antes de procesar.
+    # mode="reschedule" libera el worker mientras espera (no bloquea).
+    # Requiere conexión fs_default en Admin → Connections de Airflow.
+    sense_webscraping = FileSensor(
+        task_id="sense_webscraping_bronze",
+        filepath=f"{BRONZE_BASE_PATH}/webscraping_*.json",
+        fs_conn_id="fs_default",
+        poke_interval=30,
+        timeout=3600,
+        mode="reschedule",
+    )
+
+    sense_twitter = FileSensor(
+        task_id="sense_twitter_bronze",
+        filepath=f"{BRONZE_BASE_PATH}/twitter_*.json",
+        fs_conn_id="fs_default",
+        poke_interval=30,
+        timeout=3600,
+        mode="reschedule",
     )
 
     t2_webscraping = PythonOperator(
@@ -195,4 +200,6 @@ with DAG(
         python_callable=process_twitter,
     )
 
-    t1_check >> [t2_webscraping, t3_twitter]
+    # FileSensor → procesamiento (en paralelo por fuente)
+    sense_webscraping >> t2_webscraping
+    sense_twitter     >> t3_twitter
