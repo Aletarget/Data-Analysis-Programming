@@ -1,0 +1,16 @@
+{"timestamp":"2026-04-11T01:49:47.837513Z","level":"info","event":"DAG bundles loaded: dags-folder, example_dags","logger":"airflow.dag_processing.bundles.manager.DagBundlesManager","filename":"manager.py","lineno":209}
+{"timestamp":"2026-04-11T01:49:47.839586Z","level":"info","event":"Filling up the DagBag from /opt/airflow/dags/silver_processing_dag.py","logger":"airflow.dag_processing.dagbag.BundleDagBag","filename":"dagbag.py","lineno":469}
+{"timestamp":"2026-04-11T01:49:47.850419Z","level":"warning","event":"The `airflow.operators.python.PythonOperator` attribute is deprecated. Please use `'airflow.providers.standard.operators.python.PythonOperator'`.","category":"UserWarning","filename":"/opt/airflow/dags/silver_processing_dag.py","lineno":25,"logger":"py.warnings"}
+{"timestamp":"2026-04-11T01:49:47.906086Z","level":"info","event":"Task instance is in running state","logger":"task.stdout"}
+{"timestamp":"2026-04-11T01:49:47.906487Z","level":"info","event":" Previous state of the Task instance: TaskInstanceState.QUEUED","logger":"task.stdout"}
+{"timestamp":"2026-04-11T01:49:47.906783Z","level":"info","event":"Current task name:process_twitter_to_parquet","logger":"task.stdout"}
+{"timestamp":"2026-04-11T01:49:47.906994Z","level":"info","event":"Dag name:silver_processing_dag","logger":"task.stdout"}
+{"timestamp":"2026-04-11T01:49:47.911130Z","level":"info","event":"Leyendo Bronze: /opt/airflow/datalake_bronze/twitter/2026-04-09.json","logger":"unusual_prefix_850ae99cd870f113a1f3d9742696cac0ab47dc68_silver_processing_dag","filename":"silver_processing_dag.py","lineno":59}
+{"timestamp":"2026-04-11T01:49:47.941847Z","level":"info","event":"Documentos cargados desde Bronze (twitter): 1","logger":"unusual_prefix_850ae99cd870f113a1f3d9742696cac0ab47dc68_silver_processing_dag","filename":"silver_processing_dag.py","lineno":124}
+{"timestamp":"2026-04-11T01:49:47.967639Z","level":"info","event":"Shape después de limpieza: (1, 7)","logger":"unusual_prefix_850ae99cd870f113a1f3d9742696cac0ab47dc68_silver_processing_dag","filename":"silver_processing_dag.py","lineno":129}
+{"timestamp":"2026-04-11T01:49:47.970659Z","level":"info","event":"Columnas: ['_id', 'tweets', 'has_next_page', 'next_cursor', 'createdAt', 'updatedAt', '__v']","logger":"unusual_prefix_850ae99cd870f113a1f3d9742696cac0ab47dc68_silver_processing_dag","filename":"silver_processing_dag.py","lineno":130}
+{"timestamp":"2026-04-11T01:49:48.306621Z","level":"info","event":"Silver escrito: /opt/airflow/datalake_silver/twitter.parquet — 1 filas, 7 columnas","logger":"unusual_prefix_850ae99cd870f113a1f3d9742696cac0ab47dc68_silver_processing_dag","filename":"silver_processing_dag.py","lineno":148}
+{"timestamp":"2026-04-11T01:49:48.307068Z","level":"info","event":"Done. Returned value was: None","logger":"airflow.task.operators.airflow.providers.standard.operators.python.PythonOperator","filename":"python.py","lineno":229}
+{"timestamp":"2026-04-11T01:49:48.360366Z","level":"info","event":"Task instance in success state","logger":"task.stdout"}
+{"timestamp":"2026-04-11T01:49:48.360796Z","level":"info","event":" Previous state of the Task instance: TaskInstanceState.RUNNING","logger":"task.stdout"}
+{"timestamp":"2026-04-11T01:49:48.361193Z","level":"info","event":"Task operator:<Task(PythonOperator): process_twitter_to_parquet>","logger":"task.stdout"}
