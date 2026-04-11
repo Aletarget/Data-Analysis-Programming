@@ -1,0 +1,12 @@
+# Airflow logs
+airflow/logs/
+logs/
+
+# Airflow cache
+airflow/dags/__pycache__/
+**/__pycache__/
+*.pyc
+
+# Variables de entorno
+.env
+*.env
