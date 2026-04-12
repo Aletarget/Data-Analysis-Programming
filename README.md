@@ -1,103 +1,122 @@
-# Data Analysis & Programming - 2026-1
+# Data Analysis & Programming (2026-1)
 
-Repository for the **Data Analysis & Programming** course for the 2026-1 semester. This project implements a modern data lake architecture with Apache Airflow for orchestrating data analysis processes.
+Academic project for the Data Analysis & Programming course. It implements a Medallion-style data architecture orchestrated with Apache Airflow to move data from MongoDB into analytics-ready layers.
 
-## 📋 Project Structure
+## Goal
 
-```
+Build a reproducible data pipeline with two active stages:
+
+- Raw data ingestion into Bronze.
+- Data cleaning and standardization into Silver (Parquet format).
+
+## Repository Structure
+
+```text
 .
-├── airflow/                    # Data process orchestration with Apache Airflow
-│   └── dags/                   # DAGs (Directed Acyclic Graphs) for pipelines
-├── datalake_bronze/            # Bronze layer - raw unprocessed data
-├── datalake_silver/            # Silver layer - validated and transformed data
-├── datalake_gold/              # Gold layer - business-ready data
-├── notebooks/                  # Jupyter notebooks for exploratory analysis
-└── workshop_1/                 # First workshop - Web Scraping & API Requests
-    ├── FirstRequestXApi.json   # Data obtained from API request
-    ├── webScraping.txt         # Web scraping notes and exercises
-    └── main.tex                # LaTeX document with assignment/notes
+├── airflow/
+│   ├── dags/
+│   │   ├── bronze_ingestion_dag.py
+│   │   └── silver_processing_dag.py
+│   ├── docker-compose.yaml
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── config/
+├── datalake_bronze/
+├── datalake_silver/
+├── datalake_gold/
+├── notebooks/
+├── workshop_1/
+├── woekshop_2/
+├── catchUp/
+└── getRawDataService/
 ```
 
-## 🏗️ Medallion Architecture
+## Data Architecture
 
-The project implements the **Medallion Data Lake** architecture with three data layers:
+- Bronze (datalake_bronze): raw JSON files.
+- Silver (datalake_silver): cleaned and typed Parquet files.
+- Gold (datalake_gold): reserved for curated aggregates and final consumption.
 
-| Layer | Folder | Description |
-|-------|--------|-------------|
-| **Bronze** | `datalake_bronze/` | Raw data imported from external sources (APIs, scraping, files) |
-| **Silver** | `datalake_silver/` | Clean, validated data with basic transformations |
-| **Gold** | `datalake_gold/` | Aggregated and optimized data for analysis and reports |
+## Current DAGs
 
-## 🔄 Main Components
+1. bronze_ingestion_webscraping
+- Schedule: daily.
+- Action: extracts the most recent document from the web scraping collection and writes it to Bronze.
 
-### Apache Airflow (`airflow/`)
-- Data pipeline orchestration
-- Task dependency management
-- Automated monitoring and scheduling
-- Reusable DAGs for ETL processes
+2. bronze_ingestion_twitter
+- Schedule: Monday and Thursday at 06:00 UTC.
+- Action: extracts Twitter/comments documents and writes them to Bronze.
 
-### Analysis & Notebooks (`notebooks/`)
-- Jupyter notebooks for exploratory analysis
-- Data visualizations
-- Findings documentation
+3. silver_processing_dag
+- Schedule: Monday and Thursday at 07:00 UTC.
+- Action: detects new Bronze JSON files, applies cleaning/transformation logic, and writes Parquet files to Silver.
 
-### Workshops
-- **Workshop 1**: Introduction to Web Scraping and API Requests
+## Requirements
 
-## 🎯 Course Objectives
+- Docker and Docker Compose.
+- Git.
+- Optional for local development outside containers: Python 3.10+.
 
-- Learn data analysis fundamentals
-- Implement ETL/ELT pipelines
-- Orchestrate processes with Airflow
-- Practice web scraping and APIs
-- Work with modern data lake architectures
+## Environment Configuration
 
-## 📚 Prerequisites
+The pipeline uses environment variables for MongoDB connectivity and data lake paths.
 
-- Python 3.8+
-- Apache Airflow
-- Jupyter Notebook
-- Libraries: pandas, requests, beautifulsoup4, etc.
+Define at least the following in airflow/.env:
 
-## 🚀 Getting Started
+```env
+MONGO_URI=<your_mongodb_uri>
+MONGO_DB=<your_database_name>
+BRONZE_BASE_PATH=/opt/airflow/datalake_bronze
+SILVER_BASE_PATH=/opt/airflow/datalake_silver
+```
 
-1. **Clone the repository**
+Security note:
+- Never commit real credentials to GitHub.
+- Use placeholders in documentation and keep secrets only in local .env files or a secret manager.
+
+## Quick Start (Airflow with Docker)
+
+From the airflow directory:
+
 ```bash
-git clone <repository-url>
-cd Data-Analysis-Programming
+cd airflow
+docker compose up airflow-init
+docker compose up -d
 ```
 
-2. **Install dependencies** (optional)
+Then open Airflow at http://localhost:8080.
+
+To stop services:
+
 ```bash
-pip install -r requirements.txt
+docker compose down
 ```
 
-3. **Explore the workshops**
-   - Review documentation in `workshop_1/`
-   - Run analysis notebooks
+## Expected Data Flow
 
-4. **Set up Airflow** (optional)
-```bash
-airflow db init
-airflow scheduler
-airflow webserver
-```
+1. Ingestion DAGs write JSON files into datalake_bronze.
+2. The Silver DAG reads the latest file per source.
+3. Cleaning and type normalization are applied.
+4. Processed Parquet files are written into datalake_silver.
 
-## 📝 Workshop Content
+## Workshops and Supporting Material
 
-### Workshop 1: Web Scraping & API Requests
-- Practical web scraping exercises
-- REST API consumption
-- JSON data processing
+- workshop_1: first workshop files and deliverables.
+- woekshop_2: second workshop technical documentation.
+- notebooks: exploratory analysis notebooks.
 
-## 👤 Author
+## Project Status
 
-Student of Data Analysis & Programming - 2026-1
+- Bronze layer: operational.
+- Silver layer: operational.
+- Gold layer: created, pending modeling and business views.
 
-## 📅 Academic Period
+## Authors
 
-Semester 2026-1
+- Juan Diego Grajales Castillo
+- Carmen Sofia Florez Juajibioy
+- Edgar Alejandro Mora Chala
 
 ---
 
-*Last updated: March 2026*
+Last updated: 2026-04-12
