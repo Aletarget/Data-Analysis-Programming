@@ -11,3 +11,4 @@ airflow/dags/__pycache__/
 .env
 *.env
 *.venv
+*.vscode
