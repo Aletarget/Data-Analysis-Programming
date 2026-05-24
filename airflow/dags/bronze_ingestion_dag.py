@@ -65,7 +65,7 @@ def get_client() -> MongoClient:
     return MongoClient(MONGO_URI, serverSelectionTimeoutMS=5_000)
 
 
-def write_bronze(data: list[dict], source: str, topic: str, execution_date: str) -> str:
+def write_bronze(data: list[dict], source: str, topic: str) -> str:
     """Escribe en datalake_bronze/{source}_{topic}_YYYYMMDD_HHMMSS.json"""
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     dest_dir  = Path(BRONZE_BASE_PATH)
@@ -98,8 +98,6 @@ def extract_webscraping(**context) -> None:
     Extrae el documento más reciente de la colección de webscraping
     ordenando por createdAt descendente.
     """
-    execution_date: str = context["ds"]
-
     with get_client() as client:
         doc = client[MONGO_DB][COLLECTION_WEBSCRAPING].find_one(
             sort=[("createdAt", -1)]
@@ -110,7 +108,7 @@ def extract_webscraping(**context) -> None:
         return
 
     log.info("Documento webscraping extraído — createdAt: %s", doc.get("createdAt"))
-    path = write_bronze([doc], "webscraping", "noticias", execution_date)
+    path = write_bronze([doc], "webscraping", "noticias")
     log.info("Bronze escrito: %s", path)
 
 
@@ -118,8 +116,6 @@ def extract_twitter(**context) -> None:
     """
     Extrae todos los documentos de la colección de Twitter.
     """
-    execution_date: str = context["ds"]
-
     with get_client() as client:
         docs = list(client[MONGO_DB][COLLECTION_TWITTER].find({}))
 
@@ -128,7 +124,7 @@ def extract_twitter(**context) -> None:
         return
 
     log.info("Documentos Twitter extraídos: %d", len(docs))
-    path = write_bronze(docs, "twitter", "tweets", execution_date)
+    path = write_bronze(docs, "twitter", "tweets")
     log.info("Bronze escrito: %s", path)
 
 

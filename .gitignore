@@ -10,3 +10,4 @@ airflow/dags/__pycache__/
 # Variables de entorno
 .env
 *.env
+*.venv
