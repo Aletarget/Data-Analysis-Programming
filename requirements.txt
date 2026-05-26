@@ -1,0 +1,16 @@
+# Local Python dependencies for notebooks and helper scripts.
+# Airflow runtime dependencies are kept in airflow/requirements.txt.
+
+pymongo
+dnspython
+pandas
+pyarrow
+beautifulsoup4
+requests
+nltk
+lxml
+numpy
+matplotlib
+seaborn
+ipython
+python-dotenv

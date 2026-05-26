@@ -1,0 +1,12 @@
+gold_event_date,gold_entity,unique_records,text_coverage_ratio,total_tweet_likeCount,total_tweet_replyCount,total_tweet_retweetCount,total_tweet_quoteCount,total_tweet_viewCount
+2026-04-10,news,1,1.0,0.0,0.0,0.0,0.0,0.0
+2026-04-10,news_comment,1,1.0,0.0,0.0,0.0,0.0,0.0
+2026-04-10,tweet,1,1.0,6498.0,354.0,234.0,12.0,637068.0
+2026-04-13,tweet,1,1.0,3975.0,470.0,205.0,10.0,423740.0
+2026-04-16,tweet,1,1.0,3770.0,465.0,190.0,10.0,414325.0
+2026-04-20,tweet,1,1.0,145.0,55.0,10.0,15.0,55280.0
+2026-05-14,tweet,1,0.0,0.0,0.0,0.0,0.0,0.0
+2026-05-18,tweet,1,0.0,0.0,0.0,0.0,0.0,0.0
+2026-05-21,tweet,1,0.0,0.0,0.0,0.0,0.0,0.0
+2026-05-24,news,1,1.0,0.0,0.0,0.0,0.0,0.0
+2026-05-24,news_comment,1,1.0,0.0,0.0,0.0,0.0,0.0
