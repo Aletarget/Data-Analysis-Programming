@@ -26,7 +26,7 @@ Build a reproducible data pipeline with two active stages:
 ├── datalake_gold/
 ├── notebooks/
 ├── workshop_1/
-├── woekshop_2/
+├── workshop_2/
 ├── catchUp/
 └── getRawDataService/
 ```
