@@ -15,9 +15,9 @@ from airflow.providers.standard.operators.python import PythonOperator
 
 log = logging.getLogger(__name__)
 
-# ──────────────────────────────────────────────
+
 # Configuración
-# ──────────────────────────────────────────────
+
 BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH", "/tmp/bronze")
 SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH", "/tmp/silver")
 
@@ -29,9 +29,9 @@ DEFAULT_ARGS = {
     "email_on_failure": False,
 }
 
-# ──────────────────────────────────────────────
+
 # Helpers
-# ──────────────────────────────────────────────
+
 def load_latest_bronze(source: str) -> list[dict]:
     bronze_dir = Path(BRONZE_BASE_PATH)
     json_files = sorted(bronze_dir.glob(f"{source}_*.json"), reverse=True)
@@ -72,9 +72,19 @@ def process_and_write_parquet(source: str, topic: str) -> str:
     doc = raw_data[0] if isinstance(raw_data, list) else raw_data
     
     if source == "twitter":
-        raw_docs = doc.get("tweets", [])
+        snapshot_date = doc.get("date", "")
+        raw_docs = []
+        for tweet in doc.get("tweets", []):
+            tweet["snapshot_date"] = snapshot_date
+            raw_docs.append(tweet)
     elif source == "webscraping":
-        raw_docs = doc.get("news", [])
+        snapshot_id   = doc.get("_id", "")
+        snapshot_date = doc.get("date", "")
+        raw_docs = []
+        for news_item in doc.get("news", []):
+            news_item["snapshot_id"]   = snapshot_id
+            news_item["snapshot_date"] = snapshot_date
+            raw_docs.append(news_item)
     else:
         # Por seguridad, si no es ninguno, intentamos tratarlo como lista de documentos
         raw_docs = raw_data if isinstance(raw_data, list) else [raw_data]
@@ -92,13 +102,9 @@ def process_and_write_parquet(source: str, topic: str) -> str:
     df = pd.DataFrame(cleaned_docs)
 
     # 3. Conversión de fechas inteligente
-    date_cols = [c for c in df.columns if 'date' in c.lower() or 'time' in c.lower()]
+    date_cols = [c for c in df.columns if ('date' in c.lower() or 'time' in c.lower()) and c != 'snapshot_date']  # excluir snapshot_date
     for col in date_cols:
         df[col] = pd.to_datetime(df[col].astype(str), utc=True, errors='coerce')
-
-    # 4. Asegurar que las columnas object sean strings planos
-    for col in df.select_dtypes(include="object").columns:
-        df[col] = df[col].astype(str).replace('None', '')
 
     # 5. Escritura a Parquet
     silver_dir = Path(SILVER_BASE_PATH)
@@ -110,9 +116,9 @@ def process_and_write_parquet(source: str, topic: str) -> str:
     
     log.info("Silver escrito para %s: %s — %d filas", source, dest_file, len(df))
     return str(dest_file)
-# ──────────────────────────────────────────────
+
 # DAG
-# ──────────────────────────────────────────────
+
 with DAG(
     dag_id="silver_processing_dag",
     description="Procesa JSON de bronze a Parquet en silver",

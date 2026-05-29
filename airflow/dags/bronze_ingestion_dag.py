@@ -24,9 +24,9 @@ from pymongo import MongoClient
 
 log = logging.getLogger(__name__)
 
-# ──────────────────────────────────────────────
+
 # Configuración
-# ──────────────────────────────────────────────
+
 MONGO_URI        = os.getenv("MONGO_URI")
 MONGO_DB         = os.getenv("MONGO_DB")
 BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH")
@@ -43,9 +43,9 @@ DEFAULT_ARGS = {
 }
 
 
-# ──────────────────────────────────────────────
+
 # Serialización (ObjectId, datetime, bytes)
-# ──────────────────────────────────────────────
+
 class MongoEncoder(json.JSONEncoder):
     def default(self, obj: Any) -> Any:
         from bson import ObjectId
@@ -58,9 +58,9 @@ class MongoEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-# ──────────────────────────────────────────────
+
 # Helpers
-# ──────────────────────────────────────────────
+
 def get_client() -> MongoClient:
     return MongoClient(MONGO_URI, serverSelectionTimeoutMS=5_000)
 
@@ -76,9 +76,9 @@ def write_bronze(data, source: str, topic: str) -> str:
     return str(dest_file)
 
 
-# ──────────────────────────────────────────────
+
 # Tasks compartidos
-# ──────────────────────────────────────────────
+
 def check_connection(**context) -> None:
     """Verifica conectividad con MongoDB."""
     try:
@@ -90,9 +90,9 @@ def check_connection(**context) -> None:
         raise RuntimeError(f"No se pudo conectar a MongoDB: {e}") from e
 
 
-# ──────────────────────────────────────────────
+
 # Tasks de extracción
-# ──────────────────────────────────────────────
+
 def extract_webscraping(**context) -> None:
     """
     Extrae el documento más reciente de la colección de webscraping
