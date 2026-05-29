@@ -65,7 +65,7 @@ def get_client() -> MongoClient:
     return MongoClient(MONGO_URI, serverSelectionTimeoutMS=5_000)
 
 
-def write_bronze(data: list[dict], source: str, topic: str) -> str:
+def write_bronze(data, source: str, topic: str) -> str:
     """Escribe en datalake_bronze/{source}_{topic}_YYYYMMDD_HHMMSS.json"""
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     dest_dir  = Path(BRONZE_BASE_PATH)
@@ -108,7 +108,7 @@ def extract_webscraping(**context) -> None:
         return
 
     log.info("Documento webscraping extraído — createdAt: %s", doc.get("createdAt"))
-    path = write_bronze([doc], "webscraping", "noticias")
+    path = write_bronze(doc, "webscraping", "noticias")
     log.info("Bronze escrito: %s", path)
 
 
@@ -117,7 +117,9 @@ def extract_twitter(**context) -> None:
     Extrae todos los documentos de la colección de Twitter.
     """
     with get_client() as client:
-        docs = list(client[MONGO_DB][COLLECTION_TWITTER].find({}))
+        docs = client[MONGO_DB][COLLECTION_TWITTER].find_one(
+            sort=[("createdAt", -1)]
+        )
 
     if not docs:
         log.warning("Colección '%s' vacía.", COLLECTION_TWITTER)

@@ -1,15 +1,3 @@
-"""
-DAG: silver_processing_dag
-Descripción: Procesa los JSON crudos de datalake_bronze y los convierte
-             a Parquet limpio en datalake_silver.
-
-  Transformaciones:
-    - Elimina campos con valor None / null
-    - Convierte tipos de datos (fechas a datetime, números a int/float)
-    - Normaliza campos anidados simples a columnas planas
-    - Escribe un Parquet por fuente con nomenclatura {topic}_processed_YYYYMMDD_HHMMSS.parquet
-"""
-
 from __future__ import annotations
 
 import json
@@ -18,6 +6,7 @@ import os
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -29,8 +18,8 @@ log = logging.getLogger(__name__)
 # ──────────────────────────────────────────────
 # Configuración
 # ──────────────────────────────────────────────
-BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH")
-SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH")
+BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH", "/tmp/bronze")
+SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH", "/tmp/silver")
 
 DEFAULT_ARGS = {
     "owner":            "data-team",
@@ -40,126 +29,93 @@ DEFAULT_ARGS = {
     "email_on_failure": False,
 }
 
-
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
 def load_latest_bronze(source: str) -> list[dict]:
-    """Busca el JSON más reciente que tenga el prefijo source_ en el nombre."""
     bronze_dir = Path(BRONZE_BASE_PATH)
     json_files = sorted(bronze_dir.glob(f"{source}_*.json"), reverse=True)
 
     if not json_files:
-        raise FileNotFoundError(
-            f"No hay archivos JSON con prefijo '{source}_' en {bronze_dir}"
-        )
+        raise FileNotFoundError(f"No hay archivos JSON con prefijo '{source}_' en {bronze_dir}")
 
-    latest = json_files[0]
-    log.info("Leyendo Bronze: %s", latest)
-
-    with open(latest, encoding="utf-8") as f:
+    with open(json_files[0], encoding="utf-8") as f:
         return json.load(f)
 
+def flatten_dict(d, parent_key="", sep="_"):
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
 
 def clean_document(doc: dict) -> dict:
-    """
-    Limpia un documento individual:
-      - Elimina claves con valor None o string vacío
-      - Convierte strings ISO a datetime donde corresponda
-      - Intenta convertir strings numéricos a int/float
-      - Aplana dicts anidados un nivel con prefijo key_subkey
-    """
+    doc = flatten_dict(doc)
     cleaned = {}
     for key, value in doc.items():
-
-        if value is None:
+        if value is None or (isinstance(value, str) and value.strip() == ""):
             continue
-
-        if isinstance(value, str) and value.strip() == "":
-            continue
-
-        if isinstance(value, str) and ("T" in value or "-" in value):
-            try:
-                cleaned[key] = datetime.fromisoformat(value)
-                continue
-            except ValueError:
-                pass
-
-        if isinstance(value, str):
-            try:
-                cleaned[key] = int(value)
-                continue
-            except ValueError:
-                pass
-            try:
-                cleaned[key] = float(value)
-                continue
-            except ValueError:
-                pass
-
-        if isinstance(value, dict):
-            for sub_key, sub_val in value.items():
-                if sub_val is not None:
-                    cleaned[f"{key}_{sub_key}"] = sub_val
-            continue
-
         cleaned[key] = value
-
     return cleaned
 
-
 def process_and_write_parquet(source: str, topic: str) -> str:
-    """
-    Lee el JSON más reciente de bronze, aplica limpieza
-    y escribe datalake_silver/{topic}_processed_YYYYMMDD_HHMMSS.parquet
-    """
     import pandas as pd
+    import json
 
-    raw_docs = load_latest_bronze(source)
-    log.info("Documentos cargados desde Bronze (%s): %d", source, len(raw_docs))
+    raw_data = load_latest_bronze(source)
+    
+    # 1. Normalización de la estructura (ajustado para twitter o webscraping)
+    # Asumimos que raw_data es un dict (el snapshot) o una lista [snapshot]
+    doc = raw_data[0] if isinstance(raw_data, list) else raw_data
+    
+    if source == "twitter":
+        raw_docs = doc.get("tweets", [])
+    elif source == "webscraping":
+        raw_docs = doc.get("news", [])
+    else:
+        # Por seguridad, si no es ninguno, intentamos tratarlo como lista de documentos
+        raw_docs = raw_data if isinstance(raw_data, list) else [raw_data]
 
-    cleaned_docs = [clean_document(doc) for doc in raw_docs]
+    # 2. Aplanamiento y serialización
+    cleaned_docs = []
+    for doc_item in raw_docs:
+        flat = flatten_dict(doc_item)
+        # Convertimos CUALQUIER valor que sea dict o list a una cadena JSON
+        for k, v in flat.items():
+            if isinstance(v, (dict, list)):
+                flat[k] = json.dumps(v, ensure_ascii=False)
+        cleaned_docs.append(flat)
 
     df = pd.DataFrame(cleaned_docs)
-    log.info("Shape después de limpieza: %s", df.shape)
-    log.info("Columnas: %s", list(df.columns))
 
-    df = df.infer_objects()
+    # 3. Conversión de fechas inteligente
+    date_cols = [c for c in df.columns if 'date' in c.lower() or 'time' in c.lower()]
+    for col in date_cols:
+        df[col] = pd.to_datetime(df[col].astype(str), utc=True, errors='coerce')
 
+    # 4. Asegurar que las columnas object sean strings planos
     for col in df.select_dtypes(include="object").columns:
-        try:
-            df[col] = pd.to_datetime(df[col], utc=True)
-        except Exception:
-            pass
+        df[col] = df[col].astype(str).replace('None', '')
 
+    # 5. Escritura a Parquet
     silver_dir = Path(SILVER_BASE_PATH)
     silver_dir.mkdir(parents=True, exist_ok=True)
-
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     dest_file = silver_dir / f"{topic}_processed_{timestamp}.parquet"
+    
     df.to_parquet(dest_file, index=False, engine="pyarrow")
-
-    log.info("Silver escrito: %s — %d filas, %d columnas", dest_file, len(df), len(df.columns))
+    
+    log.info("Silver escrito para %s: %s — %d filas", source, dest_file, len(df))
     return str(dest_file)
-
-
 # ──────────────────────────────────────────────
-# Tasks
+# DAG
 # ──────────────────────────────────────────────
-def process_webscraping(**context) -> None:
-    process_and_write_parquet("webscraping", "noticias")
-
-
-def process_twitter(**context) -> None:
-    process_and_write_parquet("twitter", "tweets")
-
-
-# ══════════════════════════════════════════════
-# DAG — Silver Processing
-# ══════════════════════════════════════════════
 with DAG(
     dag_id="silver_processing_dag",
-    description="Procesa los JSON crudos de bronze y los convierte a Parquet en silver",
+    description="Procesa JSON de bronze a Parquet en silver",
     default_args=DEFAULT_ARGS,
     schedule="0 7 * * 1,4",
     start_date=datetime(2024, 1, 1),
@@ -167,15 +123,14 @@ with DAG(
     tags=["silver", "procesamiento"],
 ) as dag:
 
-    t2_webscraping = PythonOperator(
+    t_web = PythonOperator(
         task_id="process_webscraping_to_parquet",
-        python_callable=process_webscraping,
+        python_callable=lambda: process_and_write_parquet("webscraping", "noticias"),
     )
 
-    t3_twitter = PythonOperator(
+    t_twitter = PythonOperator(
         task_id="process_twitter_to_parquet",
-        python_callable=process_twitter,
+        python_callable=lambda: process_and_write_parquet("twitter", "tweets"),
     )
 
-    t2_webscraping
-    t3_twitter
+    t_web >> t_twitter

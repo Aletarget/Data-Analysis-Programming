@@ -86,6 +86,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/../datalake_bronze:/opt/airflow/datalake_bronze
     - ${AIRFLOW_PROJ_DIR:-.}/../datalake_silver:/opt/airflow/datalake_silver
+    - ${AIRFLOW_PROJ_DIR:-.}/../datalake_gold:/opt/airflow/datalake_gold
 
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-common-depends-on
@@ -103,6 +104,9 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+      - ./airflow/sql/init_neo_db.sql:/docker-entrypoint-initdb.d/init_neo_db.sql
+    ports:
+      - '5439:5432' #Evitar conflictos con otras instancias de postgres (5439)
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 10s
