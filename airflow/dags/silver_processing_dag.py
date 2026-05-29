@@ -7,6 +7,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 import pandas as pd
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -61,22 +62,25 @@ def clean_document(doc: dict) -> dict:
         cleaned[key] = value
     return cleaned
 
-def process_and_write_parquet(source: str, topic: str) -> str:
+def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
     import pandas as pd
     import json
 
+    log.info("Iniciando procesamiento — source: %s, topic: %s", source, topic)
+
     raw_data = load_latest_bronze(source)
-    
-    # 1. Normalización de la estructura (ajustado para twitter o webscraping)
-    # Asumimos que raw_data es un dict (el snapshot) o una lista [snapshot]
+    log.info("Bronze cargado — %d documentos", len(raw_data) if isinstance(raw_data, list) else 1)
+
     doc = raw_data[0] if isinstance(raw_data, list) else raw_data
-    
+
     if source == "twitter":
         snapshot_date = doc.get("date", "")
         raw_docs = []
         for tweet in doc.get("tweets", []):
             tweet["snapshot_date"] = snapshot_date
             raw_docs.append(tweet)
+        log.info("Tweets extraídos: %d", len(raw_docs))
+
     elif source == "webscraping":
         snapshot_id   = doc.get("_id", "")
         snapshot_date = doc.get("date", "")
@@ -85,58 +89,91 @@ def process_and_write_parquet(source: str, topic: str) -> str:
             news_item["snapshot_id"]   = snapshot_id
             news_item["snapshot_date"] = snapshot_date
             raw_docs.append(news_item)
+        log.info("Noticias extraídas: %d", len(raw_docs))
+
     else:
-        # Por seguridad, si no es ninguno, intentamos tratarlo como lista de documentos
         raw_docs = raw_data if isinstance(raw_data, list) else [raw_data]
 
-    # 2. Aplanamiento y serialización
+    log.info("Aplanando documentos...")
     cleaned_docs = []
     for doc_item in raw_docs:
         flat = flatten_dict(doc_item)
-        # Convertimos CUALQUIER valor que sea dict o list a una cadena JSON
         for k, v in flat.items():
             if isinstance(v, (dict, list)):
                 flat[k] = json.dumps(v, ensure_ascii=False)
         cleaned_docs.append(flat)
 
-    df = pd.DataFrame(cleaned_docs)
+    log.info("Documentos aplanados: %d", len(cleaned_docs))
 
-    # 3. Conversión de fechas inteligente
-    date_cols = [c for c in df.columns if ('date' in c.lower() or 'time' in c.lower()) and c != 'snapshot_date']  # excluir snapshot_date
+    df = pd.DataFrame(cleaned_docs)
+    log.info("DataFrame creado — shape: %s", df.shape)
+
+    date_cols = [
+        c for c in df.columns
+        if ('date' in c.lower() or 'time' in c.lower()) and c != 'snapshot_date'
+    ]
     for col in date_cols:
         df[col] = pd.to_datetime(df[col].astype(str), utc=True, errors='coerce')
 
-    # 5. Escritura a Parquet
+    log.info("Escribiendo parquet...")
     silver_dir = Path(SILVER_BASE_PATH)
     silver_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     dest_file = silver_dir / f"{topic}_processed_{timestamp}.parquet"
-    
+
     df.to_parquet(dest_file, index=False, engine="pyarrow")
-    
-    log.info("Silver escrito para %s: %s — %d filas", source, dest_file, len(df))
+
+    log.info("Silver escrito: %s — %d filas", dest_file, len(df))
     return str(dest_file)
 
-# DAG
-
+# DAG to clean and convert webscrapping .json file to .parquet file 
 with DAG(
-    dag_id="silver_processing_dag",
-    description="Procesa JSON de bronze a Parquet en silver",
-    default_args=DEFAULT_ARGS,
-    schedule="0 7 * * 1,4",
+    dag_id="silver_webscraping",
+    schedule=None,
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["silver", "procesamiento"],
-) as dag:
+    tags=["silver", "clean", "webscraping"],
+) as dag_silver_webscraping:
 
-    t_web = PythonOperator(
-        task_id="process_webscraping_to_parquet",
-        python_callable=lambda: process_and_write_parquet("webscraping", "noticias"),
+    process = PythonOperator(
+        task_id="process_webscraping",
+        python_callable=process_and_write_parquet,
+        op_kwargs={
+            "source": "webscraping",
+            "topic":  "noticias"
+        },
+    )
+    
+    trigger_gold = TriggerDagRunOperator(
+        task_id="trigger_gold_webscraping",
+        trigger_dag_id="gold_webscraping",
+        wait_for_completion=False,
     )
 
-    t_twitter = PythonOperator(
-        task_id="process_twitter_to_parquet",
-        python_callable=lambda: process_and_write_parquet("twitter", "tweets"),
+    process >> trigger_gold
+
+# DAG to clean and convert tweets .json file to .parquet file 
+with DAG(
+    dag_id="silver_twitter",
+    schedule=None,
+    start_date=datetime(2024, 1, 1),
+    catchup=False,
+    tags=["silver", "clean", "tweets"],
+) as dag_silver_twitter:
+
+    process = PythonOperator(
+        task_id="process_twitter",
+        python_callable=process_and_write_parquet,
+        op_kwargs={
+            "source": "twitter",
+            "topic":  "tweets"
+        },
+    )
+    
+    trigger_gold = TriggerDagRunOperator(
+        task_id="trigger_gold_twitter",
+        trigger_dag_id="gold_twitter",
+        wait_for_completion=False,
     )
 
-    t_web >> t_twitter
+    process >> trigger_gold

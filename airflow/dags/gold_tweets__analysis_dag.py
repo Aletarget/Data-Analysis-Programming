@@ -267,35 +267,41 @@ def storytelling_tweets():
 # DAG
 
 with DAG(
-    dag_id="gold_processing_dag",
-    description="Genera capa Gold: governance KPIs y storytelling summaries",
-    default_args=DEFAULT_ARGS,
-    schedule="30 7 * * 1,4",  # 30 min después del silver
-    start_date=datetime(2024, 1, 1),
+    dag_id="gold_webscraping",
+    schedule=None,
+    start_date=datetime(2024,1,1),
     catchup=False,
-    tags=["gold", "governance", "storytelling"],
+    tags=["gold"],
 ) as dag:
 
-    t_gov_noticias = PythonOperator(
-        task_id="governance_noticias",
-        python_callable=governance_noticias,
+    t_gov_news = PythonOperator(
+        task_id="generate_governance_news",
+        python_callable=governance_noticias
     )
+
+    t_story_news = PythonOperator(
+        task_id="generate_storytelling_news",
+        python_callable=storytelling_noticias
+    )
+
+    t_gov_news >> t_story_news
+    
+with DAG(
+    dag_id="gold_twitter",
+    schedule=None,
+    start_date=datetime(2024,1,1),
+    catchup=False,
+    tags=["gold"],
+) as dag:
 
     t_gov_tweets = PythonOperator(
-        task_id="governance_tweets",
-        python_callable=governance_tweets,
-    )
-
-    t_story_noticias = PythonOperator(
-        task_id="storytelling_noticias",
-        python_callable=storytelling_noticias,
+        task_id="generate_governance_tweets",
+        python_callable=governance_tweets
     )
 
     t_story_tweets = PythonOperator(
-        task_id="storytelling_tweets",
-        python_callable=storytelling_tweets,
+        task_id="generate_storytelling_tweets",
+        python_callable=storytelling_tweets
     )
 
-    # Governance primero, luego storytelling
-    t_gov_noticias >> t_story_noticias
-    t_gov_tweets   >> t_story_tweets
+    t_gov_tweets >> t_story_tweets

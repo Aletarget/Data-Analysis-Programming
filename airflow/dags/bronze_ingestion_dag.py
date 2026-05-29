@@ -15,6 +15,7 @@ import sys
 from datetime import datetime, date, timedelta
 from pathlib import Path
 from typing import Any
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -130,9 +131,9 @@ def extract_twitter(**context) -> None:
     log.info("Bronze escrito: %s", path)
 
 
-# ══════════════════════════════════════════════
+
 # DAG 1 — Webscraping (diario)
-# ══════════════════════════════════════════════
+
 with DAG(
     dag_id="bronze_ingestion_webscraping",
     description="Ingesta diaria: último documento de webscraping → datalake_bronze/webscraping",
@@ -143,15 +144,28 @@ with DAG(
     tags=["bronze", "ingesta", "webscraping"],
 ) as dag_webscraping:
 
-    t1 = PythonOperator(task_id="check_mongo_connection", python_callable=check_connection)
-    t2 = PythonOperator(task_id="extract_webscraping",    python_callable=extract_webscraping)
+    t1 = PythonOperator(
+        task_id="check_mongo_connection",
+        python_callable=check_connection
+    )
 
-    t1 >> t2
+    t2 = PythonOperator(
+        task_id="extract_webscraping",
+        python_callable=extract_webscraping
+    )
+
+    trigger_silver = TriggerDagRunOperator(
+        task_id="trigger_silver_webscraping",
+        trigger_dag_id="silver_webscraping",
+        wait_for_completion=False,
+    )
+
+    t1 >> t2 >> trigger_silver
 
 
-# ══════════════════════════════════════════════
+
 # DAG 2 — Twitter (lunes y jueves 06:00 UTC)
-# ══════════════════════════════════════════════
+
 with DAG(
     dag_id="bronze_ingestion_twitter",
     description="Ingesta bisemanal: todos los docs de Twitter → datalake_bronze/twitter",
@@ -162,7 +176,20 @@ with DAG(
     tags=["bronze", "ingesta", "twitter"],
 ) as dag_twitter:
 
-    t1 = PythonOperator(task_id="check_mongo_connection", python_callable=check_connection)
-    t2 = PythonOperator(task_id="extract_twitter",        python_callable=extract_twitter)
+    t1 = PythonOperator(
+        task_id="check_mongo_connection",
+        python_callable=check_connection
+    )
 
-    t1 >> t2
+    t2 = PythonOperator(
+        task_id="extract_twitter",
+        python_callable=extract_twitter
+    )
+
+    trigger_silver = TriggerDagRunOperator(
+        task_id="trigger_silver_twitter",
+        trigger_dag_id="silver_twitter",
+        wait_for_completion=False,
+    )
+
+    t1 >> t2 >> trigger_silver
