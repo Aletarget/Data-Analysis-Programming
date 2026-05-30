@@ -1,307 +1,249 @@
 from __future__ import annotations
 
-import json
 import logging
 import os
-import sys
-from datetime import datetime, timedelta
 from pathlib import Path
-
-import pandas as pd
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import (
+    col, count, countDistinct, avg, max, min, 
+    sum as spark_sum, when, isnan, isnull, length, to_date, desc,
+    from_unixtime, from_json, size, explode, substring
+)
+from pyspark.sql.types import ArrayType, StringType
+
 log = logging.getLogger(__name__)
 
-# Configuración
-SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH", "/opt/airflow/datalake_silver")
-GOLD_BASE_PATH   = os.getenv("GOLD_BASE_PATH",   "/opt/airflow/datalake_gold")
+# CONFIGURACIÓN
+SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH")
+GOLD_BASE_PATH = os.getenv("GOLD_BASE_PATH")
 
 DEFAULT_ARGS = {
-    "owner":            "data-team",
-    "depends_on_past":  False,
-    "retries":          1,
-    "retry_delay":      timedelta(minutes=5),
-    "email_on_failure": False,
+    "owner": "data-team",
+    "depends_on_past": False,
+    "retries": 1,
+    "retry_delay": timedelta(minutes=5),
 }
-# Helpers
-def read_silver(prefix: str) -> pd.DataFrame:
-    """Lee todos los parquet de silver con el prefijo dado."""
-    silver_dir = Path(SILVER_BASE_PATH)
-    files = sorted(silver_dir.glob(f"{prefix}_processed_*.parquet"), reverse=True)
-    if not files:
-        raise FileNotFoundError(f"No hay archivos silver con prefijo '{prefix}' en {silver_dir}")
-    # Lee el más reciente
-    df = pd.read_parquet(files[0])
-    log.info("Silver leído: %s — %d filas", files[0].name, len(df))
-    return df
 
-
-def write_gold(df: pd.DataFrame, name: str) -> str:
-    """Escribe un DataFrame como parquet en gold."""
-    gold_dir = Path(GOLD_BASE_PATH)
-    gold_dir.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    dest = gold_dir / f"{name}_{timestamp}.parquet"
-    df.to_parquet(dest, index=False, engine="pyarrow")
-    log.info("Gold escrito: %s — %d filas", dest.name, len(df))
-    return str(dest)
-
-
-# GOVERNANCE KPIs — Noticias
-def governance_noticias():
-    import ast
-
-    df = read_silver("noticias")
-
-    # Parsear comments
-    def parse_comments(val):
-        try:
-            return ast.literal_eval(val) if isinstance(val, str) else val
-        except Exception:
-            return []
-
-    df["comments_list"] = df["comments"].apply(parse_comments)
-    df["comment_count"] = df["comments_list"].apply(len)
-
-    # ── KPI 1: Tasa de duplicados por newsLink
-    total_rows       = len(df)
-    duplicate_rows   = df.duplicated(subset=["newsLink"]).sum()
-    duplicate_rate   = round(duplicate_rows / total_rows * 100, 2) if total_rows else 0
-
-    # ── KPI 2: Tasa de noticias sin comentarios
-    no_comments      = (df["comment_count"] == 0).sum()
-    no_comments_rate = round(no_comments / total_rows * 100, 2) if total_rows else 0
-
-    # ── KPI 3: Distribución de comentarios por noticia
-    comment_stats = df["comment_count"].describe().rename("comment_count_stats")
-
-    # ── KPI 4: Noticias únicas
-    unique_links = df["newsLink"].nunique()
-
-    # ── Construir resumen governance
-    gov_df = pd.DataFrame([{
-        "snapshot_date":        df["snapshot_date"].iloc[0] if "snapshot_date" in df.columns else None,
-        "total_news":           total_rows,
-        "unique_news":          unique_links,
-        "duplicate_rows":       int(duplicate_rows),
-        "duplicate_rate_pct":   duplicate_rate,
-        "news_no_comments":     int(no_comments),
-        "no_comments_rate_pct": no_comments_rate,
-        "avg_comments":         round(df["comment_count"].mean(), 2),
-        "max_comments":         int(df["comment_count"].max()),
-        "min_comments":         int(df["comment_count"].min()),
-        "std_comments":         round(df["comment_count"].std(), 2),
-        "total_comments":       int(df["comment_count"].sum()),
-    }])
-
-    write_gold(gov_df, "governance_noticias")
-    log.info("Governance noticias completado.")
-
-# GOVERNANCE KPIs — Tweets
-def governance_tweets():
-    TWEET_COLS = [
-        "id", "text", "createdAt", "lang", "source", "snapshot_date",
-        "retweetCount", "replyCount", "likeCount", "quoteCount", "viewCount",
-        "isReply", "author_userName", "author_followers", "author_isVerified",
-    ]
-
-    df = read_silver("tweets")
-    cols = [c for c in TWEET_COLS if c in df.columns]
-    df   = df[cols].copy()
-
-    total_rows     = len(df)
-    duplicate_rows = df.duplicated(subset=["id"]).sum() if "id" in df.columns else 0
-    duplicate_rate = round(duplicate_rows / total_rows * 100, 2) if total_rows else 0
-
-    # Nulos por columna relevante
-    null_rates = {
-        f"null_rate_{c}": round(df[c].isna().sum() / total_rows * 100, 2)
-        for c in ["text", "createdAt", "lang", "author_userName"]
-        if c in df.columns
-    }
-
-    # Métricas de engagement
-    engagement_cols = ["retweetCount", "replyCount", "likeCount", "quoteCount", "viewCount"]
-    engagement_stats = {}
-    for col in engagement_cols:
-        if col in df.columns:
-            numeric = pd.to_numeric(df[col], errors="coerce")
-            engagement_stats[f"avg_{col}"] = round(numeric.mean(), 2)
-            engagement_stats[f"max_{col}"] = int(numeric.max()) if not numeric.isna().all() else 0
-
-    # Idiomas
-    lang_dist = df["lang"].value_counts().to_dict() if "lang" in df.columns else {}
-
-    gov_df = pd.DataFrame([{
-        "snapshot_date":      df["snapshot_date"].iloc[0] if "snapshot_date" in df.columns else None,
-        "total_tweets":       total_rows,
-        "duplicate_rows":     int(duplicate_rows),
-        "duplicate_rate_pct": duplicate_rate,
-        "unique_langs":       len(lang_dist),
-        "top_lang":           max(lang_dist, key=lang_dist.get) if lang_dist else None,
-        **null_rates,
-        **engagement_stats,
-    }])
-
-    write_gold(gov_df, "governance_tweets")
-    log.info("Governance tweets completado.")
-
-
-# STORYTELLING — Noticias
-def storytelling_noticias():
-    import ast
-
-    df = read_silver("noticias")
-
-    def parse_comments(val):
-        try:
-            return ast.literal_eval(val) if isinstance(val, str) else val
-        except Exception:
-            return []
-
-    df["comments_list"] = df["comments"].apply(parse_comments)
-    df["comment_count"] = df["comments_list"].apply(len)
-
-    # ── Aggregation 1: Noticias más comentadas
-    top_news = (
-        df[["newsLink", "comment_count"]]
-        .sort_values("comment_count", ascending=False)
-        .head(10)
-        .reset_index(drop=True)
+def get_spark():
+    """
+    Configuración de Spark requerida por el Workshop #3.
+    """
+    return (
+        SparkSession.builder
+        .appName("gold_layer_processing")
+        .master("local[*]") 
+        .config("spark.driver.memory", "4g") 
+        .config("spark.sql.parquet.inferTimestampNTZ.enabled", "true")
+        .getOrCreate()
     )
-    top_news["rank"] = top_news.index + 1
-    write_gold(top_news, "storytelling_top_news")
 
-    # ── Aggregation 2: Explotar comentarios para análisis de texto
-    df_exploded = df.explode("comments_list").reset_index(drop=True)
-    df_exploded = df_exploded.rename(columns={"comments_list": "comment"})
-    df_exploded["comment_length"] = df_exploded["comment"].astype(str).apply(len)
-
-    # Distribución de longitud de comentarios
-    length_stats = df_exploded.groupby("newsLink")["comment_length"].agg(
-        avg_length="mean",
-        max_length="max",
-        min_length="min",
-        total_comments="count"
-    ).reset_index()
-    length_stats["avg_length"] = length_stats["avg_length"].round(2)
-    write_gold(length_stats, "storytelling_comment_length")
-
-    # ── Aggregation 3: Todos los comentarios expandidos (para NLP futuro)
-    df_comments_flat = df_exploded[["newsLink", "comment", "comment_length", "snapshot_date"]].copy() \
-        if "snapshot_date" in df_exploded.columns \
-        else df_exploded[["newsLink", "comment", "comment_length"]].copy()
-    write_gold(df_comments_flat, "storytelling_comments_flat")
-
-    log.info("Storytelling noticias completado.")
+def write_gold(df, name):
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    path = f"{GOLD_BASE_PATH}/{name}_{timestamp}.parquet"
+    df.coalesce(1).write.mode("overwrite").parquet(path)
+    log.info("Archivo Gold guardado en: %s", path)
 
 
+# 1. LÓGICA DE WEBSCRAPING (NOTICIAS)
+def governance_news():
+    spark = get_spark()
+    files = [str(p) for p in Path(SILVER_BASE_PATH).glob("noticias_processed_*.parquet")]
+    if not files:
+        log.warning("No hay archivos de noticias en Silver.")
+        return
+        
+    df = spark.read.parquet(*files)
+    total_news = df.count()
+    unique_news = df.select(countDistinct("newsLink")).collect()[0][0]
+    duplicate_rows = total_news - unique_news
+    
+    # Dado que solo tenemos 'comments' como texto, calcularemos las métricas sobre ellos.
+    # Convertimos el string JSON de comentarios a un Array en Spark
+    df_with_comments = df.withColumn(
+        "comments_array", 
+        from_json(col("comments"), ArrayType(StringType()))
+    )
+    
+    # Contamos la cantidad de comentarios por noticia
+    df_with_comments = df_with_comments.withColumn("num_comments", size(col("comments_array")))
+    
+    # Calculamos cuántas noticias no tienen comentarios
+    news_without_comments = df_with_comments.filter(col("num_comments") <= 0).count()
 
-# STORYTELLING — Tweets
+    result_df = spark.createDataFrame([(
+        total_news,
+        unique_news,
+        duplicate_rows,
+        round((duplicate_rows / total_news * 100), 2) if total_news else 0,
+        news_without_comments,
+        round((news_without_comments / total_news * 100), 2) if total_news else 0
+    )], [
+        "total_news", "unique_news", "duplicate_rows", "duplicate_rate_pct",
+        "news_without_comments", "no_comments_rate_pct"
+    ])
+    
+    write_gold(result_df, "governance_news")
+    spark.stop()
+
+
+def storytelling_news():
+    spark = get_spark()
+    files = [str(p) for p in Path(SILVER_BASE_PATH).glob("noticias_processed_*.parquet")]
+    if not files: return
+    
+    df = spark.read.parquet(*files)
+    
+    #Normalizamos todo a un string con formato de fecha seguro
+    safe_date_string = when(
+        col("snapshot_date").rlike("^[0-9]+$"), # Si la cadena contiene ÚNICAMENTE números (el timestamp UNIX)
+        from_unixtime(col("snapshot_date").cast("double") / 1000)
+    ).otherwise(
+        substring(col("snapshot_date"), 1, 10) # Si es una fecha ISO (ej. 2026-05-29T...), tomamos solo YYYY-MM-DD
+    )
+
+    #Ahora sí, convertimos el string normalizado a Date
+    df = df.withColumn("date_day", to_date(safe_date_string))
+    
+    # Volumen temporal completo (por noticia extraída)
+    volume = df.groupBy("date_day").count().orderBy("date_day")
+    write_gold(volume, "storytelling_news_daily_volume")
+    
+    # Base analítica para NLP: Explotamos los comentarios
+    # Como no tenemos 'content', el Análisis de Sentimiento se hará sobre los comentarios de los usuarios.
+    # Usamos explode() para que cada comentario tenga su propia fila.
+    df_comments = df.withColumn("comments_array", from_json(col("comments"), ArrayType(StringType())))
+    nlp_base = df_comments.select(
+        "newsLink", 
+        "date_day",
+        explode(col("comments_array")).alias("comment_text")
+    ).filter(col("comment_text") != "")
+    
+    write_gold(nlp_base, "storytelling_news_nlp_base")
+    spark.stop()
+
+
+# 2. LÓGICA DE TWITTER (API X)
+
+
+def governance_tweets():
+    spark = get_spark()
+    files = [str(p) for p in Path(SILVER_BASE_PATH).glob("tweets_processed_*.parquet")]
+    if not files: return
+        
+    df = spark.read.parquet(*files)
+    total_tweets = df.count()
+    unique_tweets = df.select(countDistinct("id")).collect()[0][0]
+    duplicate_rows = total_tweets - unique_tweets
+    
+    # Usuarios verificados
+    verified_users = df.filter(col("author_isVerified") == True).count()
+
+    # KPI: Estadísticas de longitud de texto del tweet
+    text_stats = df.agg(
+        avg(length(col("text"))).alias("avg_tweet_length"),
+        max(length(col("text"))).alias("max_tweet_length"),
+        min(length(col("text"))).alias("min_tweet_length")
+    ).collect()[0]
+
+    result_df = spark.createDataFrame([(
+        total_tweets,
+        unique_tweets,
+        duplicate_rows,
+        round((duplicate_rows / total_tweets * 100), 2) if total_tweets else 0,
+        verified_users,
+        text_stats["avg_tweet_length"],
+        text_stats["min_tweet_length"],
+        text_stats["max_tweet_length"]
+    )], [
+        "total_tweets", "unique_tweets", "duplicate_rows", "duplicate_rate_pct",
+        "verified_user_tweets", "avg_tweet_length", "min_tweet_length", "max_tweet_length"
+    ])
+    
+    write_gold(result_df, "governance_tweets")
+    spark.stop()
 
 def storytelling_tweets():
-    TWEET_COLS = [
-        "id", "text", "createdAt", "lang", "snapshot_date",
-        "retweetCount", "replyCount", "likeCount", "quoteCount", "viewCount",
-        "isReply", "author_userName", "author_name",
-        "author_followers", "author_isVerified", "author_isBlueVerified",
-        "author_location",
-    ]
-
-    df = read_silver("tweets")
-    cols = [c for c in TWEET_COLS if c in df.columns]
-    df   = df[cols].copy()
-
-    # Convertir métricas a numérico
-    engagement_cols = ["retweetCount", "replyCount", "likeCount", "quoteCount", "viewCount"]
-    for col in engagement_cols:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
-
-    # ── Aggregation 1: Top tweets por engagement total
-    df["engagement_total"] = df[
-        [c for c in engagement_cols if c in df.columns]
-    ].sum(axis=1)
-
-    top_tweets = (
-        df[["id", "text", "author_userName", "engagement_total", "likeCount", "retweetCount"]]
-        .sort_values("engagement_total", ascending=False)
-        .head(20)
-        .reset_index(drop=True)
+    spark = get_spark()
+    files = [str(p) for p in Path(SILVER_BASE_PATH).glob("tweets_processed_*.parquet")]
+    if not files: return
+    
+    df = spark.read.parquet(*files)
+    safe_date_string = when(
+        col("snapshot_date").rlike("^[0-9]+$"), # Si la cadena contiene ÚNICAMENTE números (el timestamp UNIX)
+        from_unixtime(col("snapshot_date").cast("double") / 1000)
+    ).otherwise(
+        substring(col("snapshot_date"), 1, 10) # Si es una fecha ISO (ej. 2026-05-29T...), tomamos solo YYYY-MM-DD
     )
-    top_tweets["rank"] = top_tweets.index + 1
-    write_gold(top_tweets, "storytelling_top_tweets")
-
-    # ── Aggregation 2: Engagement promedio por idioma
-    if "lang" in df.columns:
-        lang_engagement = df.groupby("lang").agg(
-            tweet_count=("id", "count"),
-            avg_likes=("likeCount", "mean"),
-            avg_retweets=("retweetCount", "mean"),
-            avg_engagement=("engagement_total", "mean"),
-        ).reset_index()
-        lang_engagement = lang_engagement.round(2)
-        write_gold(lang_engagement, "storytelling_engagement_by_lang")
-
-    # ── Aggregation 3: Top autores por engagement
-    if "author_userName" in df.columns:
-        top_authors = df.groupby("author_userName").agg(
-            tweet_count=("id", "count"),
-            total_engagement=("engagement_total", "sum"),
-            avg_engagement=("engagement_total", "mean"),
-            avg_followers=("author_followers", "mean"),
-        ).reset_index().sort_values("total_engagement", ascending=False).head(20)
-        top_authors = top_authors.round(2).reset_index(drop=True)
-        write_gold(top_authors, "storytelling_top_authors")
-
-    # ── Aggregation 4: Tweets planos para análisis de texto
-    df["text_length"] = df["text"].astype(str).apply(len)
-    write_gold(df, "storytelling_tweets_flat")
-
-    log.info("Storytelling tweets completado.")
+    df = df.withColumn("date_day", to_date(safe_date_string))
+    
+    df = df.withColumn(
+        "total_engagement",
+        col("likeCount") + col("replyCount") + col("retweetCount") + col("quoteCount")
+    )
+    
+    # Evolución temporal
+    volume = df.groupBy("date_day").count().orderBy("date_day")
+    write_gold(volume, "storytelling_tweets_daily_volume")
+    
+    # Distribución de idiomas
+    lang_dist = df.groupBy("lang").count().orderBy(desc("count"))
+    write_gold(lang_dist, "storytelling_tweets_lang_dist")
+    
+    # Base analítica completa para Análisis de Sentimientos (Sin limit())
+    # Utilizamos 'text_cleaned' asumiendo que agregaste la limpieza NLP en Silver
+    text_column = "text_cleaned" if "text_cleaned" in df.columns else "text"
+    nlp_base = df.select(
+        "id", "date_day", "author_userName", text_column, "total_engagement", "lang", "likeCount", "replyCount", "retweetCount", "quoteCount"
+    )
+    write_gold(nlp_base, "storytelling_tweets_nlp_base")
+    spark.stop()
 
 
-
-# DAG
+# 3. DEFINICIÓN DE DAGS
 
 with DAG(
     dag_id="gold_webscraping",
-    schedule=None,
-    start_date=datetime(2024,1,1),
+    schedule=None,  # <-- Se mantiene None porque es activado por un TriggerDagRunOperator
+    start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["gold"],
-) as dag:
+    tags=["gold", "webscraping", "nlp"],
+    default_args=DEFAULT_ARGS,
+) as dag_news:
 
     t_gov_news = PythonOperator(
-        task_id="generate_governance_news",
-        python_callable=governance_noticias
+        task_id="governance_news",
+        python_callable=governance_news,
     )
 
     t_story_news = PythonOperator(
-        task_id="generate_storytelling_news",
-        python_callable=storytelling_noticias
+        task_id="storytelling_news",
+        python_callable=storytelling_news,
     )
 
     t_gov_news >> t_story_news
-    
+
 with DAG(
     dag_id="gold_twitter",
-    schedule=None,
-    start_date=datetime(2024,1,1),
+    schedule=None,  # <-- Se mantiene None porque es activado por un TriggerDagRunOperator
+    start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["gold"],
-) as dag:
+    tags=["gold", "twitter", "nlp"],
+    default_args=DEFAULT_ARGS,
+) as dag_twitter:
 
     t_gov_tweets = PythonOperator(
-        task_id="generate_governance_tweets",
-        python_callable=governance_tweets
+        task_id="governance_tweets",
+        python_callable=governance_tweets,
     )
 
     t_story_tweets = PythonOperator(
-        task_id="generate_storytelling_tweets",
-        python_callable=storytelling_tweets
+        task_id="storytelling_tweets",
+        python_callable=storytelling_tweets,
     )
 
     t_gov_tweets >> t_story_tweets

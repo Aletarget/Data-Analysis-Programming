@@ -7,6 +7,7 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 import pandas as pd
+import re
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -62,6 +63,19 @@ def clean_document(doc: dict) -> dict:
         cleaned[key] = value
     return cleaned
 
+def clean_text_for_nlp(text):
+    if pd.isna(text) or not isinstance(text, str):
+        return ""
+    # Eliminar URLs
+    text = re.sub(r'http\S+|www\.\S+', '', text)
+    # Eliminar etiquetas HTML
+    text = re.sub(r'<.*?>', '', text)
+    # Eliminar menciones de Twitter (@usuario)
+    text = re.sub(r'@\w+', '', text)
+    # Reemplazar saltos de línea extra y espacios múltiples
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
+
 def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
     import pandas as pd
     import json
@@ -69,7 +83,6 @@ def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
     log.info("Iniciando procesamiento — source: %s, topic: %s", source, topic)
 
     raw_data = load_latest_bronze(source)
-    log.info("Bronze cargado — %d documentos", len(raw_data) if isinstance(raw_data, list) else 1)
 
     doc = raw_data[0] if isinstance(raw_data, list) else raw_data
 
@@ -94,7 +107,7 @@ def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
     else:
         raw_docs = raw_data if isinstance(raw_data, list) else [raw_data]
 
-    log.info("Aplanando documentos...")
+
     cleaned_docs = []
     for doc_item in raw_docs:
         flat = flatten_dict(doc_item)
@@ -103,10 +116,8 @@ def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
                 flat[k] = json.dumps(v, ensure_ascii=False)
         cleaned_docs.append(flat)
 
-    log.info("Documentos aplanados: %d", len(cleaned_docs))
 
     df = pd.DataFrame(cleaned_docs)
-    log.info("DataFrame creado — shape: %s", df.shape)
 
     date_cols = [
         c for c in df.columns
@@ -115,13 +126,25 @@ def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
     for col in date_cols:
         df[col] = pd.to_datetime(df[col].astype(str), utc=True, errors='coerce')
 
-    log.info("Escribiendo parquet...")
     silver_dir = Path(SILVER_BASE_PATH)
     silver_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     dest_file = silver_dir / f"{topic}_processed_{timestamp}.parquet"
 
-    df.to_parquet(dest_file, index=False, engine="pyarrow")
+    log.info("Aplicando limpieza NLP a columnas de texto...")
+    text_cols = [c for c in df.columns if c in ['text', 'content', 'description', 'title']]
+    for col in text_cols:
+        df[f"{col}_cleaned"] = df[col].apply(clean_text_for_nlp)
+        # Calcular la longitud del texto limpio (KPI de Gobernanza futuro)
+        df[f"{col}_length"] = df[f"{col}_cleaned"].apply(len)
+    
+    
+    df.to_parquet(
+        dest_file,                          
+        engine='pyarrow',
+        coerce_timestamps='us',              
+        allow_truncated_timestamps=True      
+    )
 
     log.info("Silver escrito: %s — %d filas", dest_file, len(df))
     return str(dest_file)
