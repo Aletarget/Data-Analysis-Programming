@@ -25,9 +25,9 @@ from pyspark.sql.types import ArrayType, StringType
 
 log = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
+
 # Environment
-# ---------------------------------------------------------------------------
+
 SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH", "/data/silver")
 GOLD_BASE_PATH = os.getenv("GOLD_BASE_PATH", "/data/gold")
 
@@ -39,9 +39,9 @@ DEFAULT_ARGS = {
     "email_on_failure": False,
 }
 
-# ---------------------------------------------------------------------------
-# Brand / Product / Topic taxonomy  (driven by the X API queries you use)
-# ---------------------------------------------------------------------------
+
+# Brand / Product / Topic taxonomy
+
 BRANDS = {
     # Phones
     "apple":    ["apple", "iphone", "iphones", "airpods", "macbook", "macbooks"],
@@ -115,16 +115,15 @@ TOPICS = {
     "audio":        ["audio", "sound", "speaker", "microphone", "anc", "noise cancel"],
     "connectivity": ["bluetooth", "wifi", "5g", "connectivity", "signal"],
     "design":       ["design", "build", "quality", "premium", "plastic", "glass", "weight"],
-    # New topics detected from GSM Arena / ArenaEV sources
+    # New topics GSM ARENA
     "foldable":     ["fold", "foldable", "flip"],
     "ai":           ["ai", "artificial intelligence", "galaxy ai", "on-device ai"],
     "ev":           ["electric vehicle", "ev", "car", "yu7"],
     "smartwatch":   ["watch", "smartwatch", "wearable"],
 }
 
-# ---------------------------------------------------------------------------
+
 # VADER singleton
-# ---------------------------------------------------------------------------
 _vader = None
 
 def _get_vader():
@@ -148,9 +147,9 @@ def _batch_sentiment(texts: list[str]) -> tuple[list[str], list[float]]:
         scores.append(round(abs(compound), 4))
     return labels, scores
 
-# ---------------------------------------------------------------------------
+
 # Spark helper
-# ---------------------------------------------------------------------------
+
 def _get_spark() -> SparkSession:
     return (
         SparkSession.builder
@@ -166,9 +165,9 @@ def _safe_date_col():
         from_unixtime(col("snapshot_date").cast("double") / 1000),
     ).otherwise(substring(col("snapshot_date"), 1, 10))
 
-# ---------------------------------------------------------------------------
+
 # Gold writer helpers
-# ---------------------------------------------------------------------------
+
 def _gold_path(name: str) -> str:
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     return f"{GOLD_BASE_PATH}/{name}_{timestamp}.parquet"
@@ -186,9 +185,9 @@ def _write_gold_json(data: dict | list, name: str) -> None:
         json.dump(data, f, ensure_ascii=False, indent=2)
     log.info("Gold JSON written: %s", path)
 
-# ---------------------------------------------------------------------------
+
 # Taxonomy matching helpers
-# ---------------------------------------------------------------------------
+
 def _match_taxonomy(text: str, taxonomy: dict[str, list[str]]) -> list[str]:
     """Return all keys in taxonomy whose keywords appear in text (lowercased)."""
     text_lower = text.lower()
@@ -205,11 +204,11 @@ def _enrich_df(pdf: pd.DataFrame, text_col: str) -> pd.DataFrame:
     pdf["topic"]   = texts.apply(lambda t: _first_or_none(_match_taxonomy(t, TOPICS)))
     return pdf
 
-# ---------------------------------------------------------------------------
+
 # TASK 1 — Governance: Tweets
 # Folder: gold/governance/tweets/
 # Artifact: governance_tweets_weekly
-# ---------------------------------------------------------------------------
+
 def process_governance_tweets() -> None:
     spark = _get_spark()
     files = list(Path(SILVER_BASE_PATH).glob("tweets_processed_*.parquet"))
@@ -263,11 +262,11 @@ def process_governance_tweets() -> None:
     log.info("Governance tweets written: %d rows", len(pdf))
     spark.stop()
 
-# ---------------------------------------------------------------------------
+
 # TASK 2 — Governance: News comments
 # Folder: gold/governance/news/
 # Artifact: governance_news_weekly
-# ---------------------------------------------------------------------------
+
 def process_governance_news() -> None:
     spark = _get_spark()
     files = list(Path(SILVER_BASE_PATH).glob("noticias_processed_*.parquet"))
@@ -310,9 +309,9 @@ def process_governance_news() -> None:
     log.info("Governance news written: %d rows", len(pdf))
     spark.stop()
 
-# ---------------------------------------------------------------------------
+
 # Helper: load latest governance parquets as pandas DataFrames
-# ---------------------------------------------------------------------------
+
 def _load_gov_tweets(spark: SparkSession) -> pd.DataFrame:
     gov_dir = Path(GOLD_BASE_PATH) / "governance" / "tweets"
     files = list(gov_dir.glob("governance_tweets_weekly_*.parquet"))
@@ -339,10 +338,10 @@ def _sentiment_pcts(sub: pd.DataFrame, score_col: str = "sentiment_score") -> di
         "avg_score":    round(sub[score_col].mean(), 4),
     }
 
-# ---------------------------------------------------------------------------
+
 # TASK 3 — Brand Analytics (Tweets + News unified)
 # Artifact: brand_analytics_weekly
-# ---------------------------------------------------------------------------
+
 def build_brand_analytics() -> None:
     spark = _get_spark()
     tweets = _load_gov_tweets(spark)
@@ -374,10 +373,10 @@ def build_brand_analytics() -> None:
     _write_gold_parquet(pdf_out, "brand_analytics_weekly", spark)
     spark.stop()
 
-# ---------------------------------------------------------------------------
+
 # TASK 4 — Topic Analytics (Tweets + News unified)
 # Artifact: topic_analytics_weekly
-# ---------------------------------------------------------------------------
+
 def build_topic_analytics() -> None:
     spark = _get_spark()
     tweets = _load_gov_tweets(spark)
@@ -405,10 +404,10 @@ def build_topic_analytics() -> None:
     _write_gold_parquet(pdf_out, "topic_analytics_weekly", spark)
     spark.stop()
 
-# ---------------------------------------------------------------------------
+
 # TASK 5 — Product Analytics
 # Artifact: product_analytics_weekly
-# ---------------------------------------------------------------------------
+
 def build_product_analytics() -> None:
     spark = _get_spark()
     tweets = _load_gov_tweets(spark)
@@ -439,10 +438,10 @@ def build_product_analytics() -> None:
     _write_gold_parquet(pdf_out, "product_analytics_weekly", spark)
     spark.stop()
 
-# ---------------------------------------------------------------------------
+
 # TASK 6 — Top Influencers (Twitter only — news has no author data)
 # Artifact: top_influencers_weekly
-# ---------------------------------------------------------------------------
+
 def build_top_influencers() -> None:
     spark = _get_spark()
     tweets = _load_gov_tweets(spark)
@@ -475,10 +474,10 @@ def build_top_influencers() -> None:
     _write_gold_parquet(pdf_out, "top_influencers_weekly", spark)
     spark.stop()
 
-# ---------------------------------------------------------------------------
+
 # TASK 7 — Representative Comments
 # Artifact: representative_comments_weekly
-# ---------------------------------------------------------------------------
+
 def build_representative_comments() -> None:
     spark = _get_spark()
     tweets = _load_gov_tweets(spark)
@@ -511,10 +510,9 @@ def build_representative_comments() -> None:
     _write_gold_parquet(pdf_out, "representative_comments_weekly", spark)
     spark.stop()
 
-# ---------------------------------------------------------------------------
-# TASK 8 — Storytelling (executive summary JSON)
-# Artifact: storytelling_weekly.json
-# ---------------------------------------------------------------------------
+
+# TASK 8 — Storytelling
+
 def build_storytelling() -> None:
     """
     Reads brand / topic / product analytics (already computed in previous tasks)
@@ -584,9 +582,9 @@ def build_storytelling() -> None:
     log.info("Storytelling parquet written for week %d", current_week)
     spark.stop()
 
-# ---------------------------------------------------------------------------
+
 # DAG definition
-# ---------------------------------------------------------------------------
+
 with DAG(
     dag_id="gold_sentiment_weekly",
     start_date=datetime(2024, 1, 1),
