@@ -167,13 +167,6 @@ with DAG(
         },
     )
     
-    trigger_gold = TriggerDagRunOperator(
-        task_id="trigger_gold_webscraping",
-        trigger_dag_id="gold_processing_dag",
-        wait_for_completion=False,
-    )
-
-    process >> trigger_gold
 
 # DAG to clean and convert tweets .json file to .parquet file 
 with DAG(
@@ -192,11 +185,3 @@ with DAG(
             "topic":  "tweets"
         },
     )
-    
-    trigger_gold = TriggerDagRunOperator(
-        task_id="trigger_gold_twitter",
-        trigger_dag_id="gold_processing_dag",
-        wait_for_completion=False,
-    )
-
-    process >> trigger_gold
