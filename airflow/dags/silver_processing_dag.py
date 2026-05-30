@@ -20,8 +20,8 @@ log = logging.getLogger(__name__)
 
 # Configuración
 
-BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH", "/tmp/bronze")
-SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH", "/tmp/silver")
+BRONZE_BASE_PATH = os.getenv("BRONZE_BASE_PATH")
+SILVER_BASE_PATH = os.getenv("SILVER_BASE_PATH")
 
 DEFAULT_ARGS = {
     "owner":            "data-team",
@@ -169,7 +169,7 @@ with DAG(
     
     trigger_gold = TriggerDagRunOperator(
         task_id="trigger_gold_webscraping",
-        trigger_dag_id="gold_webscraping",
+        trigger_dag_id="gold_processing_dag",
         wait_for_completion=False,
     )
 
@@ -195,7 +195,7 @@ with DAG(
     
     trigger_gold = TriggerDagRunOperator(
         task_id="trigger_gold_twitter",
-        trigger_dag_id="gold_twitter",
+        trigger_dag_id="gold_processing_dag",
         wait_for_completion=False,
     )
 
