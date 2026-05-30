@@ -1,0 +1,352 @@
+\documentclass[12pt, a4paper]{article}
+
+% Paquetes esenciales
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+% Configuración de colores
+\definecolor{primarynavy}{HTML}{0D1B2A}
+\definecolor{interactiveblue}{HTML}{1B4FBF}
+
+% Formato de títulos
+\titleformat{\section}{\Large\bfseries\color{primarynavy}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{interactiveblue}}{\thesubsection}{1em}{}
+
+\begin{document}
+
+% ---------------------------------------------------------
+% PORTADA
+% ---------------------------------------------------------
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Large \textsc{Universidad Distrital Francisco José de Caldas}\par}
+    \vspace{0.5cm}
+    {\large \textsc{Faculty of Engineering}\par}
+    {\large \textsc{Systems Engineering}\par}
+    
+    \vspace{3cm}
+    
+    {\Huge \bfseries Dashboard Implementation Report \par}
+    \vspace{0.5cm}
+    {\Large Workshop No. 4\par}
+    
+    \vspace{1.5cm}
+    
+    {\large \textbf{Course:} Data Analysis Programming\par}
+    
+    \vspace{3cm}
+    
+    {\Large \textbf{Authors:}\par}
+    \vspace{0.5cm}
+    {\large Juan Diego Grajales Castillo\par}
+    {\large Carmen Sofía Flórez Juajibioy\par}
+    {\large Edgar Alejandro Mora Chala\par}
+    
+    \vfill
+    
+    {\large Bogotá, Colombia \par}
+    {\large May 30, 2026\par}
+\end{titlepage}
+
+% ---------------------------------------------------------
+% ÍNDICE
+% ---------------------------------------------------------
+\tableofcontents
+\newpage
+
+% ---------------------------------------------------------
+% CONTENIDO
+% ---------------------------------------------------------
+
+\section{Executive Summary}
+This report documents the design, implementation, and integration of two independent Plotly Dash web applications that serve as the presentation layer of a Medallion data pipeline processing public sentiment on consumer technology products. The pipeline ingests data from two complementary sources: the Twitter/X API (real-time consumer opinions) and GSM Arena / ArenaEV web scraping (structured tech news comments). Both data streams are processed through Bronze, Silver, and Gold layers orchestrated by Apache Airflow on Docker.
+
+The Governance Dashboard (localhost:8050) targets data engineers and analysts, surfacing data quality KPIs, null rates, volume trends, and schema compliance from the Gold governance parquet files. The Storytelling Dashboard (localhost:8051) targets functional business users, translating sentiment scores, brand rankings, and topic trends into plain-language narratives and intuitive visualizations.
+
+\begin{itemize}
+    \item \textbf{8} Gold Artifacts
+    \item \textbf{2} Data Sources
+    \item \textbf{2} Dashboard Apps
+    \item \textbf{8} DAG Tasks
+\end{itemize}
+
+\section{Pipeline Integration Overview}
+The full pipeline consists of three sequential DAG stages, each triggered after the previous layer completes successfully. A FileSensor in the Silver DAG watches for new Bronze JSON files before initiating processing, ensuring no stale data propagates.
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{l X l X}
+\toprule
+\textbf{Layer} & \textbf{DAG ID} & \textbf{Output Format} & \textbf{Trigger} \\
+\midrule
+Bronze & bronze\_ingestion & JSON (raw) & Manual/Scheduled \\
+Silver & silver\_twitter, silver\_webscraping & Parquet (cleaned) & FileSensor on Bronze \\
+Gold & gold\_sentiment\_weekly & Parquet (8 artifacts) & TriggerDagRunOperator \\
+\bottomrule
+\end{tabularx}
+\caption{Pipeline Integration Overview}
+\end{table}
+
+\section{Gold Layer Architecture}
+The Gold DAG (gold\_sentiment\_weekly) produces eight distinct artifacts, organized into two functional groups: Governance (data quality traceability) and Analytics (business intelligence). Governance artifacts are stored in dedicated subfolders to maintain clear separation of concerns.
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{c l X l}
+\toprule
+\textbf{\#} & \textbf{Artifact} & \textbf{Location} & \textbf{Format} \\
+\midrule
+1 & governance\_tweets\_weekly & gold/governance/tweets/ & Parquet \\
+2 & governance\_news\_weekly & gold/governance/news/ & Parquet \\
+3 & brand\_analytics\_weekly & gold/ & Parquet \\
+4 & topic\_analytics\_weekly & gold/ & Parquet \\
+5 & product\_analytics\_weekly & gold/ & Parquet \\
+6 & top\_influencers\_weekly & gold/ & Parquet \\
+7 & representative\_comments\_weekly & gold/ & Parquet \\
+8 & storytelling\_weekly & gold/ & Parquet \\
+\bottomrule
+\end{tabularx}
+\caption{Gold Layer Artifacts}
+\end{table}
+
+Taxonomy coverage. Brand, product, and topic enrichment is driven by keyword dictionaries aligned to the three X API queries used in Bronze ingestion (PhonesQuery, Computers Query, Accessories Query), ensuring that only terms that can realistically appear in the Silver data generate taxonomy matches. Extended topics include foldable, ai, ev, and smartwatch to capture GSM Arena and ArenaEV content patterns.
+
+\section{Governance Dashboard}
+\textbf{File:} dashboard/governance\_app.py | \textbf{Port:} localhost:8050 | \textbf{Audience:} Data Engineers / Analysts
+
+\subsection{Design Rationale}
+The governance dashboard is designed around a single question: can I trust the data in the Gold layer? The layout follows a progressive disclosure pattern: summary KPI cards at the top provide an immediate health signal, followed by progressively more detailed charts (null rates, volume trends, outlier distributions) that allow analysts to drill into specific quality issues. 
+
+Data is loaded exclusively from the Gold governance parquet files using \texttt{pd.read\_parquet()}. The application polls for the latest file on every page load, so it always reflects the most recent DAG run without requiring a manual refresh.
+
+\subsection{Component Inventory}
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Component} & \textbf{Type} & \textbf{Description} \\
+\midrule
+KPI Summary Cards & Metric Cards & Four numeric cards: total records ingested, overall null rate (\%), duplicate rate (\%), and schema compliance rate (\%). Color-coded green/yellow/red by threshold. \\
+Null Rate Bar Chart & Bar (horiz.) & Horizontal bar chart showing null rate per field, ordered descending by severity. Fields above the 5\% threshold rendered in red. Source annotation included. \\
+Volume Over Time & Line/Bar & Weekly record volume per source (Twitter vs. GSM Arena). Dual-axis where needed. Highlights ingestion peaks and data gaps. \\
+Outlier Rate Chart & Bar (horiz.) & Outlier rate per numeric field (likeCount, replyCount, follower count) using IQR method. Helps identify data spikes from viral content. \\
+Data Quality Table & Table & Full tabular view of all KPIs with current values, defined thresholds, and pass/fail status. Color-coded rows. Exportable via Dash DataTable. \\
+Header Section & Static & Project title, team name, topic angle, data last-updated timestamp pulled from parquet file metadata. \\
+\bottomrule
+\end{tabularx}
+\caption{Governance Component Inventory}
+\end{table}
+
+\subsection{KPI Mapping}
+The following table maps each dashboard KPI to its source column in the governance parquet, the computation method, and the alerting threshold used to color-code the metric card.
+
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.5} % Aumentamos un poco el espacio vertical para que no se vea amontonado
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{3.5cm} >{\raggedright\arraybackslash}p{3.5cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+\textbf{KPI} & \textbf{Source Column} & \textbf{Computation} & \textbf{Alert Threshold} \\
+\midrule
+Total Records & tweet\_id / newsLink & COUNT(*) & - \\
+Null Rate (\%) & All columns & (null\_count / total\_rows) $\times$ 100 & $>$ 5\% $\rightarrow$ red \\
+Duplicate Rate (\%) & tweet\_id / newsLink & (dup\_count / total\_rows) $\times$ 100 & $>$ 2\% $\rightarrow$ yellow \\
+Schema Compliance & Column presence & (present\_cols / expected\_cols) $\times$ 100 & $<$ 95\% $\rightarrow$ red \\
+Avg Sentiment & sentiment\_score & MEAN(sentiment\_score) & - \\
+Outlier Rate (\%) & likeCount, followers & IQR method per field & $>$ 10\% $\rightarrow$ yellow \\
+\bottomrule
+\end{tabularx}
+\caption{KPI Mapping Details}
+\end{table}
+
+\section{Storytelling Dashboard}
+\textbf{File:} dashboard/storytelling\_app.py | \textbf{Port:} localhost:8051 | \textbf{Audience:} Functional / Business Users
+
+\subsection{Narrative Design}
+The storytelling dashboard follows a top-down narrative arc: it opens with the executive summary text pulled directly from the storytelling\_weekly parquet, then guides the user through brand rankings, topic sentiment, product performance, and representative community comments. Every chart label uses plain language - no column names, no technical jargon. 
+
+The interface targets the functional user persona defined in Workshop \#1: a product manager or marketing analyst who wants to understand what people are saying about tech products this week without having to interpret raw numbers. Charts prioritize insight over data density, and each section is preceded by a one-sentence plain-language interpretation.
+
+\subsection{Component Inventory}
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Component} & \textbf{Type} & \textbf{Description} \\
+\midrule
+Narrative Summary & Text Card & Auto-generated executive summary pulled from the storytelling parquet. Highlights top brand, best-received brand, most-discussed topics, and top products. \\
+Sentiment Dist. & Donut Chart & Overall breakdown of positive/negative/neutral records across all sources. Color encoding: green=positive, red=negative, grey=neutral. \\
+Sentiment Trend & Line Chart & Average sentiment score over time (weekly). Separate lines for Twitter and News sources. \\
+Brand Ranking & Bar (horiz.) & Total mentions per brand, color-coded by dominant sentiment. \\
+Top Products & Bar Chart & Mention volume per product (iphone, galaxy, rtx, etc.) with sentiment breakdown stacked. \\
+Topic Sentiment & Bar + Color & Topics ranked by mention volume; bar color encodes net sentiment. \\
+Source Comparison & Side-by-Side & Volume and sentiment comparison between Twitter API and GSM Arena scraping. \\
+Rep. Comments & Quote Cards & Best and worst community comment per brand. \\
+Header Section & Static & Project title, week number, and data last-updated timestamp. \\
+\bottomrule
+\end{tabularx}
+\caption{Storytelling Component Inventory}
+\end{table}
+
+\subsection{User Story Mapping}
+Each dashboard component maps to a specific user question that the functional user would ask when opening the dashboard on a Monday morning.
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{X l l}
+\toprule
+\textbf{User Question} & \textbf{Component} & \textbf{Gold Source} \\
+\midrule
+What's the overall mood about tech this week? & Sentiment Donut & storytelling\_weekly \\
+Which brand dominated the conversation? & Brand Ranking Bar & brand\_analytics\_weekly \\
+Is sentiment improving or getting worse? & Sentiment Trend Line & brand\_analytics\_weekly \\
+What products are people actually talking about? & Top Products Bar & product\_analytics\_weekly \\
+What topics are driving positive/negative reactions? & Topic Heatmap & topic\_analytics\_weekly \\
+What are real users actually saying about Samsung? & Comment Cards & representative\_comments\_weekly \\
+Is Twitter more positive than news site comments? & Source Comparison & gov\_tweets / gov\_news \\
+What's the one thing I should take away from this week? & Narrative Summary & storytelling\_weekly \\
+\bottomrule
+\end{tabularx}
+\caption{User Story Mapping}
+\end{table}
+
+\section{Visualization Design Decisions}
+\textbf{Color Palette:} A single colorblind-friendly palette is shared across both dashboards. Sentiment encoding is fixed and never reused for other dimensions to avoid cognitive overload.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{l l l}
+\toprule
+\textbf{Color} & \textbf{Hex} & \textbf{Semantic Use} \\
+\midrule
+Green & \#2ECC71 & Positive sentiment - KPI cards in healthy state \\
+Red & \#E74C3C & Negative sentiment - KPI alerts above threshold \\
+Grey & \#7F8C8D & Neutral sentiment - secondary information \\
+Navy & \#0D1B2A & Headers, primary brand identity \\
+Cyan & \#00C2CB & Accent - links, highlights, dividers \\
+Blue & \#1B4FBF & Interactive elements, selected states, chart primary series \\
+\bottomrule
+\end{tabular}
+\caption{Color Palette}
+\end{table}
+
+\textbf{Chart Type Rationale:}
+\begin{itemize}
+    \item \textbf{Horizontal bar charts:} Used for all ranking comparisons because they handle long labels naturally and support left-to-right reading of magnitude.
+    \item \textbf{Line charts for time series:} Sentiment trends are displayed as lines, not bars, because the continuity of a line better conveys opinion shifts over time.
+    \item \textbf{Donut over pie chart:} Allows a central label showing the dominant sentiment, improving scannability.
+    \item \textbf{Stacked bars for breakdown:} Shows volume + sentiment split simultaneously without requiring two separate charts.
+    \item \textbf{Tables for governance KPIs:} Analysts need exact numbers and threshold comparisons, not visual approximations.
+\end{itemize}
+No more than 5 distinct chart types are used across both dashboards. Consistency reduces the cognitive cost of learning the interface.
+
+\section{DAG Task Graph}
+The Gold DAG runs every Sunday at midnight (ISO week boundary). Tasks 1 and 2 (governance) run in parallel as they read from independent Silver sources. Tasks 3-7 (analytics) depend on both governance tasks completing successfully. Task 8 (storytelling) acts as a final aggregation step, reading the outputs of all preceding analytics tasks. Parallelism reduces total DAG wall-clock time by approximately 60\% compared to sequential execution.
+
+\begin{table}[h]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{l l X}
+\toprule
+\textbf{Task Name} & \textbf{Inputs} & \textbf{Description} \\
+\midrule
+governance\_tweets & (reads Silver) & Enrich tweets with taxonomy. Run VADER sentiment. \\
+governance\_news & (reads Silver) & Explode news comments. Enrich with taxonomy. Run VADER. \\
+brand\_analytics & gov\_tweets + gov\_news & Merge sources by brand. Compute counts, sentiment \%. \\
+topic\_analytics & gov\_tweets + gov\_news & Aggregate by topic across sources. Compute sentiment \%. \\
+product\_analytics & gov\_tweets + gov\_news & Aggregate by product. Infer brand. Sentiment breakdown. \\
+top\_influencers & gov\_tweets only & Group by author + brand. Rank by engagement. \\
+representative\_comments & gov\_tweets + gov\_news & Select highest/lowest-scoring comment per brand. \\
+storytelling & All 5 analytics tasks & Synthesize artifacts into single-row summary parquet. \\
+\bottomrule
+\end{tabularx}
+\caption{DAG Task Workflow}
+\end{table}
+
+\section{Integration Adjustments}
+\begin{itemize}
+    \item \textbf{Unified governance folder structure:} Governance artifacts are now written to separate subfolders (\texttt{gold/governance/tweets/} and \texttt{gold/governance/news/}) to prevent file glob collisions.
+    \item \textbf{Storytelling artifact converted to Parquet:} Converted from JSON to a single-row Parquet file to maintain consistency and allow \texttt{pd.read\_parquet()} loading.
+    \item \textbf{Nested columns serialized before Spark write:} Python lists or dicts are serialized to JSON strings before Spark DataFrame creation to avoid schema inference failures in local mode.
+    \item \textbf{Extended topic taxonomy:} Added `foldable`, `ai`, `ev`, and `smartwatch` to cover GSM Arena terms; resolving a 30\% null topic issue.
+    \item \textbf{Comment noise filter:} Comments shorter than 20 characters are filtered to prevent single-word noise appearing as representative insights.
+    \item \textbf{Spark session stop() per task:} Explicitly stopping the \texttt{SparkSession} avoids conflicts when Airflow runs multiple Python tasks in the same worker process.
+\end{itemize}
+
+\section{Reproducibility \& Setup}
+All services run inside Docker; no local Python environment is required beyond Docker itself. The complete project can be reproduced with the following steps:
+
+\begin{enumerate}
+    \item \textbf{Clone \& configure:} \texttt{git clone \&\& cd cp .env.example .env}
+    \item \textbf{Start Airflow:} \texttt{docker-compose up -d}
+    \item \textbf{Trigger DAGs in sequence:} Trigger \texttt{bronze\_ingestion} $\rightarrow$ \texttt{silver\_twitter} + \texttt{silver\_webscraping} $\rightarrow$ \texttt{gold\_sentiment\_weekly}.
+    \item \textbf{Launch Governance Dashboard:} \texttt{cd dashboard \&\& python governance\_app.py}
+    \item \textbf{Launch Storytelling Dashboard:} \texttt{cd dashboard \&\& python storytelling\_app.py}
+\end{enumerate}
+Dashboard code lives under \texttt{dashboard/}. The repository is tagged \texttt{v1.0-workshop4} at the delivery commit.
+
+\section{Challenges and Resolutions}
+\begin{itemize}
+    \item \textbf{PySpark nested type serialization (Severity: HIGH):} Spark's local mode cannot infer schemas for Python dict/list columns. \textbf{Resolution:} Serialize all complex columns to JSON strings before \texttt{spark.createDataFrame()} and parse them back in the dashboard.
+    \item \textbf{GSM Arena comment noise (Severity: MEDIUM):} Comments contained metadata mixed with text. \textbf{Resolution:} Applied a 20-character minimum text filter and excluded strings matching known metadata patterns.
+    \item \textbf{Snapshot date parsing heterogeneity (Severity: MEDIUM):} Contains both Unix timestamps and ISO dates. \textbf{Resolution:} A Spark conditional expression detects numeric strings to apply \texttt{from\_unixtime()} or falls back to substring.
+    \item \textbf{SparkContext conflicts in Airflow (Severity: HIGH):} Running multiple tasks caused already stopped errors. \textbf{Resolution:} Ensure each task fully isolates and stops its own \texttt{SparkSession}.
+    \item \textbf{Dashboard data freshness (Severity: LOW):} Plotly Dash does not natively poll for new files. \textbf{Resolution:} A \texttt{dcc.Interval} component triggers a 5-minute callback to re-scan the Gold directory and reload if a newer file is found.
+\end{itemize}
+
+% ---------------------------------------------------------
+% REFERENCIAS (BIBLIOGRAFÍA)
+% ---------------------------------------------------------
+\begin{thebibliography}{9}
+
+\bibitem{plotly_dash}
+Plotly Dash Developer Documentation. 
+\textit{Dash Architecture and Component Reference}. 
+Disponible en: \url{https://dash.plotly.com/}
+
+\bibitem{apache_airflow}
+Apache Software Foundation. 
+\textit{Apache Airflow Documentation: Orchestrating Complex Data Pipelines}. 
+Disponible en: \url{https://airflow.apache.org/}
+
+\bibitem{medallion_architecture}
+Databricks Engineering. 
+\textit{What is the Medallion Design Pattern? Bronze, Silver, and Gold Data Layers}. 
+Disponible en: \url{https://www.databricks.com/glossary/medallion-architecture}
+
+\bibitem{pyspark_sql}
+Apache Spark. 
+\textit{PySpark SQL and DataFrames API Reference}. 
+Disponible en: \url{https://spark.apache.org/docs/latest/api/python/}
+
+\bibitem{vader_sentiment}
+Hutto, C.J. \& Gilbert, E.E. (2014). 
+\textit{VADER: A Parsimonious Rule-based Model for Sentiment Analysis of Social Media Text}. 
+Eighth International AAAI Conference on Weblogs and Social Media (ICWSM-14).
+
+\bibitem{docker_compose}
+Docker Documentation. 
+\textit{Multi-container Orchestration with Docker Compose}. 
+Disponible en: \url{https://docs.docker.com/compose/}
+
+\end{thebibliography}
+
+\end{document}
