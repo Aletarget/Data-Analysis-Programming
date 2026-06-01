@@ -16,17 +16,25 @@ Build a reproducible data pipeline with two active stages:
 ├── airflow/
 │   ├── dags/
 │   │   ├── bronze_ingestion_dag.py
-│   │   └── silver_processing_dag.py
+│   │   ├── silver_processing_dag.py
+│   │   └── gold_analysis_dag.py
 │   ├── docker-compose.yaml
 │   ├── Dockerfile
 │   ├── requirements.txt
 │   └── config/
+├── dashboard/
+│   ├── assets/
+│   │   └── style.css
+│   ├── governance_app.py
+│   └── storytelling_app.py
 ├── datalake_bronze/
 ├── datalake_silver/
 ├── datalake_gold/
 ├── notebooks/
 ├── workshop_1/
 ├── workshop_2/
+├── workshop_3/
+├── workshop_4/
 ├── catchUp/
 └── getRawDataService/
 ```
@@ -96,6 +104,34 @@ To stop services:
 docker compose down
 ```
 
+## Interactive Visualization Dashboards
+
+The presentation layer consists of two independent Plotly Dash web applications located in `dashboard/`. They load the latest Parquet folders directly from the Gold data lake layer.
+
+### Setup & Run Dashboards
+
+1. Create and activate your local Python virtual environment, then install dependencies:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   pip install dash
+   ```
+
+2. **Governance & Data Quality Dashboard (localhost:8050)**:
+   A dashboard designed for data engineers and analysts. Surfaces overall null ratios, duplicate rates, and schema compliance in visual metric cards colored by warning thresholds. Shows horizontal null profiles, box plots of text character length distributions, volume over time, and outlier detection (IQR) with a channel filter:
+   ```bash
+   python dashboard/governance_app.py
+   ```
+   Open your browser at [http://localhost:8050](http://localhost:8050).
+
+3. **Business Storytelling & Virality Dashboard (localhost:8051)**:
+   A dashboard designed for marketing managers and product owners. Synthesizes net sentiment, weekly plain-language executive summaries, brand mention shares, product line sentiment breakdowns, representative positive/critical comment cards, and social virality scatter plots mapping sentiment score vs social engagement counts:
+   ```bash
+   python dashboard/storytelling_app.py
+   ```
+   Open your browser at [http://localhost:8051](http://localhost:8051).
+
 ## Step-by-Step to Inspect MongoDB
 
 - Open [airflow/.env](airflow/.env) and confirm the MongoDB credentials are there.
@@ -142,15 +178,18 @@ docker compose up -d
 
 ## Workshops and Supporting Material
 
-- workshop_1: first workshop files and deliverables.
-- woekshop_2: second workshop technical documentation.
-- notebooks: exploratory analysis notebooks.
+- workshop_1: project definition, user stories, and data source validation.
+- workshop_2: technical architecture, compose setups, and Bronze/Silver pipeline DAGs.
+- workshop_3: PySpark analytical Gold layer workflows, quality KPIs, and storytelling specifications.
+- workshop_4: interactive Plotly Dash presentation dashboards design, styling, and LaTeX report.
+- notebooks: exploratory analysis notebooks and MongoDB inspectors.
 
 ## Project Status
 
 - Bronze layer: operational.
 - Silver layer: operational.
-- Gold layer: created, pending modeling and business views.
+- Gold layer: operational (PySpark analytical summaries generated).
+- Presentation layer: operational (Interactive Dash dashboards active).
 
 ## Authors
 

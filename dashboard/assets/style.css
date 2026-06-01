@@ -1,0 +1,308 @@
+/* General styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container */
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Header */
+.dashboard-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 194, 203, 0.1) 0%, rgba(27, 79, 191, 0.05) 50%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.dashboard-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.025em;
+    background: linear-gradient(to right, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.dashboard-subtitle {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    margin: 0;
+    font-weight: 500;
+}
+
+.header-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.meta-badge.accent {
+    border-color: rgba(0, 194, 203, 0.4);
+    background-color: rgba(0, 194, 203, 0.1);
+    color: #00c2cb;
+}
+
+/* Grid Layouts */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .chart-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.chart-grid-1 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Cards */
+.card-premium {
+    background-color: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.75rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 1.25rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* KPI Card specifics */
+.kpi-card {
+    text-align: center;
+    border-left: 5px solid #64748b;
+}
+
+.kpi-card.kpi-success {
+    border-left-color: #2ecc71;
+}
+
+.kpi-card.kpi-warning {
+    border-left-color: #f1c40f;
+}
+
+.kpi-card.kpi-danger {
+    border-left-color: #e74c3c;
+}
+
+.kpi-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-value {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-success {
+    background-color: rgba(46, 204, 113, 0.12);
+    color: #27ae60;
+}
+
+.status-warning {
+    background-color: rgba(241, 196, 15, 0.12);
+    color: #d35400;
+}
+
+.status-danger {
+    background-color: rgba(231, 76, 60, 0.12);
+    color: #c0392b;
+}
+
+/* Narrative Card */
+.narrative-card {
+    background: linear-gradient(to right, #eff6ff, #f0fdf4);
+    border-left: 6px solid #1b4fbf;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2.5rem;
+}
+
+.narrative-title {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #1b4fbf;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.narrative-body {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #334155;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Quotes section */
+.quotes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.quote-card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    position: relative;
+    border: 1px solid #e2e8f0;
+}
+
+.quote-card.positive {
+    background-color: #f0fdf4;
+    border-left: 4px solid #2ecc71;
+}
+
+.quote-card.negative {
+    background-color: #fdf2f2;
+    border-left: 4px solid #e74c3c;
+}
+
+.quote-text {
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #334155;
+    margin-bottom: 0.75rem;
+}
+
+.quote-author {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+}
+
+/* Controls */
+.controls-panel {
+    background-color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.control-label {
+    font-weight: 700;
+    color: #475569;
+    font-size: 0.9rem;
+}
+
+.control-dropdown {
+    min-width: 200px;
+}
+
+/* Dash DataTable overrides */
+.dash-spreadsheet-container .dash-spreadsheet {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+}
+
+.dash-spreadsheet-container .dash-spreadsheet td.dash-cell {
+    padding: 12px 16px !important;
+    font-family: inherit !important;
+    font-size: 0.9rem !important;
+}
+
+.dash-spreadsheet-container .dash-spreadsheet th {
+    background-color: #f8fafc !important;
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    padding: 12px 16px !important;
+    border-bottom: 2px solid #e2e8f0 !important;
+}
