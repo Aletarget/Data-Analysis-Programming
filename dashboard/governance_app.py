@@ -9,7 +9,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Base paths
-GOLD_PATH = "/home/naciscric/Documents/university/2026-1/Data-Analysis-Programming/datalake_gold"
+GOLD_PATH = os.getenv(
+    "GOLD_PATH",
+    "/opt/airflow/datalake_gold"
+)
 GOV_TWEETS_PATH = os.path.join(GOLD_PATH, "governance", "tweets")
 GOV_NEWS_PATH = os.path.join(GOLD_PATH, "governance", "news")
 

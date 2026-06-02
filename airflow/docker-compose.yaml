@@ -342,6 +342,32 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+  dashboard-governance:
+    build:
+      context: ../dashboard
+      dockerfile: Dockerfile
+    container_name: dashboard-governance
+    environment:
+      DASH_APP: governance_app.py
+      GOLD_PATH: /data/datalake_gold
+    volumes:
+      - ../datalake_gold:/data/datalake_gold:ro
+    ports:
+      - "8050:8050"
+    restart: always
 
+  dashboard-storytelling:
+    build:
+      context: ../dashboard
+      dockerfile: Dockerfile
+    container_name: dashboard-storytelling
+    environment:
+      DASH_APP: storytelling_app.py
+      GOLD_PATH: /data/datalake_gold
+    volumes:
+      - ../datalake_gold:/data/datalake_gold:ro
+    ports:
+      - "8051:8051"
+    restart: always
 volumes:
   postgres-db-volume:
