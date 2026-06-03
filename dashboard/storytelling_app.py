@@ -9,14 +9,31 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Base paths
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-GOLD_PATH = os.path.join(PROJECT_ROOT, "datalake_gold")
+# Dynamic path resolver for Gold layers to support both Docker and local developer laptops
+def resolve_gold_path():
+    env_path = os.getenv("GOLD_PATH")
+    if env_path:
+        return env_path
+    
+    # Resolve relative to the script location so it works from any execution working directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    possible_paths = [
+        os.path.join(script_dir, "../datalake_gold"),
+        os.path.join(script_dir, "datalake_gold"),
+        os.path.join(os.getcwd(), "datalake_gold"),
+        os.path.join(os.getcwd(), "../datalake_gold"),
+    ]
+    for p in possible_paths:
+        if os.path.exists(p) and os.path.isdir(p):
+            return os.path.abspath(p)
+            
+    return "/opt/airflow/datalake_gold"
+
+GOLD_PATH = resolve_gold_path()
 GOV_TWEETS_PATH = os.path.join(GOLD_PATH, "governance", "tweets")
 GOV_NEWS_PATH = os.path.join(GOLD_PATH, "governance", "news")
 
-# Helpers to load latest Parquet files
+# Helper to find latest Parquet folder/file
 def get_latest_parquet(pattern):
     search_pattern = os.path.join(GOLD_PATH, pattern)
     folders = glob.glob(search_pattern)
@@ -24,6 +41,7 @@ def get_latest_parquet(pattern):
         return None
     return max(folders, key=os.path.getmtime)
 
+# Load Gold storytelling analytics
 def load_gold_storytelling():
     brand_file = get_latest_parquet("brand_analytics_weekly_*.parquet")
     df_brand = pd.read_parquet(brand_file) if brand_file else pd.DataFrame()
@@ -40,7 +58,7 @@ def load_gold_storytelling():
     story_file = get_latest_parquet("storytelling_weekly_*.parquet")
     df_story = pd.read_parquet(story_file) if story_file else pd.DataFrame()
     
-    # Load raw governance records for advanced engagement analysis (Twitter)
+    # Load raw governance records for advanced social engagement analysis (Twitter)
     tweets_dir = get_latest_parquet(os.path.join(GOV_TWEETS_PATH, "governance_tweets_weekly_*.parquet"))
     df_raw_tweets = pd.read_parquet(tweets_dir) if tweets_dir else pd.DataFrame()
     
@@ -61,17 +79,12 @@ def load_gold_storytelling():
 # Initialize Dash application
 app = dash.Dash(__name__, title="Storytelling Insights Dashboard")
 
-# Load initial data to populate dropdown
-initial_data = load_gold_storytelling()
-brands_list = []
-if not initial_data["brand"].empty:
-    brands_list = sorted(initial_data["brand"]["brand"].dropna().unique())
-
+# App Layout
 app.layout = html.Div(className="dashboard-container", children=[
     # Header
     html.Div(className="dashboard-header", children=[
         html.H1("Technology Sentiment Storytelling Dashboard", className="dashboard-title"),
-        html.P("Translating public mood, brand perception, hot topics and social viral reach into plain-language business insights", className="dashboard-subtitle"),
+        html.P("Translating public mood, brand perception, hot topics, and social viral reach into plain-language business insights", className="dashboard-subtitle"),
         html.Div(className="header-meta", children=[
             html.Div(className="meta-badge accent", id="story-meta-last-updated"),
             html.Div(className="meta-badge", children="Audience: Product Managers & Marketing Teams"),
@@ -79,25 +92,38 @@ app.layout = html.Div(className="dashboard-container", children=[
         ])
     ]),
     
-    # Controls Panel (Brand Selector Dropdown)
+    # Informative panel explaining business metrics
+    html.Div(className="card-premium", style={"marginBottom": "2rem", "borderLeft": "6px solid #00c2cb", "background": "linear-gradient(to right, #f0fdfa, #ffffff)"}, children=[
+        html.H3("How is sentiment computed? (Business Metrics)", style={"margin": "0 0 0.5rem 0", "color": "#00c2cb", "fontWeight": "800", "fontSize": "1.15rem"}),
+        html.P([
+            "The system processes each text through Natural Language Processing (NLP) and assigns a net intensity score between ", html.Strong("-1.0 (Very Critical)"), " and ", html.Strong("+1.0 (Very Favorable)"), ". ",
+            "Messages are automatically classified into three categories: ",
+            html.Strong("Positive"), " (Score ≥ +0.05), ",
+            html.Strong("Negative"), " (Score ≤ -0.05), and ",
+            html.Strong("Neutral"), " (intermediate scores). This enables immediate brand health assessment without having to read thousands of posts manually."
+        ], style={"lineHeight": "1.6", "fontSize": "0.95rem", "color": "#475569", "margin": "0"})
+    ]),
+    
+    # Controls Panel
     html.Div(className="controls-panel", children=[
         html.Span("Focus Brand Analysis:", className="control-label"),
         dcc.Dropdown(
             id="brand-selector",
-            options=[{"label": "All Brands Unified", "value": "all"}] + [{"label": b.capitalize(), "value": b} for b in brands_list],
+            options=[{"label": "All Brands Unified", "value": "all"}],
             value="all",
             clearable=False,
-            className="control-dropdown"
+            className="control-dropdown",
+            style={"width": "350px"}
         )
     ]),
     
-    # Reload interval (5 minutes)
+    # 5-minute reload interval
     dcc.Interval(id="story-interval-reload", interval=300000, n_intervals=0),
     
     # Executive Narrative Summary
     html.Div(className="narrative-card", children=[
         html.H3("Executive Business Insight", className="narrative-title", id="text-narrative-title"),
-        html.P("Loading weekly executive narrative...", className="narrative-body", id="text-executive-summary")
+        html.P("Loading weekly executive narrative summary...", className="narrative-body", id="text-executive-summary")
     ]),
     
     # Grid 1: Brand Performance & General Sentiment Mood
@@ -120,7 +146,7 @@ app.layout = html.Div(className="dashboard-container", children=[
     html.Div(className="chart-grid-2", children=[
         # Topic Heat / Bar
         html.Div(className="card-premium", children=[
-            html.H3("Key Discussion Tópicos", className="card-title"),
+            html.H3("Key Discussion Topics (NLP)", className="card-title"),
             html.P("Hot topics ranked by mentions, color encodes average sentiment score.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1rem 0"}),
             dcc.Graph(id="chart-topic-sentiment", config={"displayModeBar": False})
         ]),
@@ -132,16 +158,16 @@ app.layout = html.Div(className="dashboard-container", children=[
         ])
     ]),
     
-    # Grid 3: Advanced Viral Reach & Engagement (NEW ADDITION)
+    # Grid 3: Advanced Viral Reach & Engagement
     html.Div(className="chart-grid-1", children=[
         html.Div(className="card-premium", children=[
-            html.H3("Social Virality: Sentiment vs Consumer Engagement", className="card-title"),
-            html.P("Scatter analysis mapping how consumer sentiment influences viral reach (engagement count). Larger bubbles indicate larger follower bases.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1rem 0"}),
+            html.H3("Social Virality: Sentiment Intensity vs. Consumer Engagement", className="card-title"),
+            html.P("Scatter analysis mapping how consumer sentiment influences viral reach (engagement count). Larger bubbles indicate larger follower bases.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1.5rem 0"}),
             dcc.Graph(id="chart-engagement-scatter", config={"displayModeBar": False})
         ])
     ]),
     
-    # Row 4: Representative Community Comments
+    # Grid 4: Representative Community Comments
     html.Div(className="chart-grid-1", children=[
         html.Div(className="card-premium", children=[
             html.H3("Representative Voice of the Community", className="card-title"),
@@ -151,7 +177,7 @@ app.layout = html.Div(className="dashboard-container", children=[
     ])
 ])
 
-# Callbacks to dynamically populate charts, selector, and text narratives
+# Callbacks to dynamically populate dropdown, charts, and text narratives
 @app.callback(
     [
         Output("text-narrative-title", "children"),
@@ -164,7 +190,8 @@ app.layout = html.Div(className="dashboard-container", children=[
         Output("container-comments-grid", "children"),
         Output("story-meta-last-updated", "children"),
         Output("story-meta-files-loaded", "children"),
-        Output("chart-brand-title", "children")
+        Output("chart-brand-title", "children"),
+        Output("brand-selector", "options")
     ],
     [
         Input("brand-selector", "value"),
@@ -182,6 +209,12 @@ def update_story_dashboard(selected_brand, n):
     df_raw_tweets = data["raw_tweets"]
     meta = data["meta"]
     
+    # Dynamically build dropdown options based on the actual loaded brands
+    brands_list = []
+    if not df_brand.empty:
+        brands_list = sorted(df_brand["brand"].dropna().unique())
+    dropdown_options = [{"label": "All Brands Unified", "value": "all"}] + [{"label": b.capitalize(), "value": b} for b in brands_list]
+    
     # 2. Executive Narrative Text (Dynamic based on selected brand)
     if selected_brand == "all" or df_brand.empty:
         narrative_title = "Weekly Executive Summary"
@@ -189,7 +222,7 @@ def update_story_dashboard(selected_brand, n):
         if not df_story.empty and "executive_summary" in df_story.columns:
             exec_summary = df_story.iloc[0]["executive_summary"]
     else:
-        narrative_title = f"{selected_brand.capitalize()} - Brand Performance Focus"
+        narrative_title = f"Brand Performance Focus: {selected_brand.capitalize()}"
         brand_row = df_brand[df_brand["brand"] == selected_brand]
         if not brand_row.empty:
             row_data = brand_row.iloc[0]
@@ -197,25 +230,24 @@ def update_story_dashboard(selected_brand, n):
             pos = row_data["positive_pct"]
             neg = row_data["negative_pct"]
             score = row_data["avg_score"]
-            sentiment_summary = "mostly positive" if score > 0.05 else ("mostly negative" if score < -0.05 else "mostly neutral")
+            sentiment_summary = "mostly positive" if score > 0.05 else ("mostly critical" if score < -0.05 else "mostly neutral")
             exec_summary = (
-                f"During the current week, {selected_brand.capitalize()} accumulated {total_m:,} mentions across social media "
-                f"and tech news comments. Consumer sentiment is {sentiment_summary} with a net sentiment score of {score:+.4f}. "
-                f"Specifically, {pos:.1f}% of discussions were positive, while {neg:.1f}% were negative. "
-                f"Below is a detailed breakdown of the products, topics, and community comments driving this feedback."
+                f"During the current week, the brand {selected_brand.capitalize()} accumulated a total volume of {total_m:,} mentions "
+                f"across the monitored channels. General consumer perception is {sentiment_summary} "
+                f"with a net sentiment score of {score:+.4f}. "
+                f"Specifically, {pos:.1f}% of discussions were positive, while {neg:.1f}% showed negative consumer feedback. "
+                f"A detailed breakdown of the products and discussion categories driving this behavior is displayed below."
             )
         else:
             exec_summary = f"No detailed records found for brand: {selected_brand.capitalize()}."
 
-    # 3. Donut chart (Global mood - Dynamic)
+    # 3. Donut chart (Global mood)
     if not df_brand.empty:
         if selected_brand == "all":
-            # Unified across all brands
             pos_mentions = (df_brand["total_mentions"] * df_brand["positive_pct"] / 100).sum()
             neg_mentions = (df_brand["total_mentions"] * df_brand["negative_pct"] / 100).sum()
             neu_mentions = (df_brand["total_mentions"] * df_brand["neutral_pct"] / 100).sum()
         else:
-            # Single brand focus
             brand_row = df_brand[df_brand["brand"] == selected_brand]
             if not brand_row.empty:
                 r = brand_row.iloc[0]
@@ -251,7 +283,7 @@ def update_story_dashboard(selected_brand, n):
     else:
         fig_donut = go.Figure()
         
-    # 4. Brand rankings horizontal bar / Brand Details (Dynamic)
+    # 4. Brand rankings horizontal bar or Channel breakdown
     brand_title = "Market Discussion Share"
     if not df_brand.empty:
         if selected_brand == "all":
@@ -271,15 +303,15 @@ def update_story_dashboard(selected_brand, n):
                 df_melt, x="Mentions", y="brand", color="Sentiment",
                 orientation="h",
                 color_discrete_map={"Positive": "#2ecc71", "Neutral": "#7f8c8d", "Negative": "#e74c3c"},
-                category_orders={"brand": brand_order}
+                category_orders={"brand": brand_order},
+                labels={"brand": "Brand", "Mentions": "Mentions volume"}
             )
         else:
-            # Show Twitter vs News Comments split for the selected brand
             brand_row = df_brand[df_brand["brand"] == selected_brand].iloc[0]
             brand_title = f"{selected_brand.capitalize()} - Channel Breakdown"
             
             fig_brand = go.Figure(data=[
-                go.Bar(name="Twitter Mentions", x=["Twitter / X"], y=[brand_row["mentions_twitter"]], marker_color="#1b4fbf"),
+                go.Bar(name="Twitter / X Mentions", x=["Twitter / X"], y=[brand_row["mentions_twitter"]], marker_color="#1b4fbf"),
                 go.Bar(name="News Comments", x=["GSM Arena Comments"], y=[brand_row["mentions_news"]], marker_color="#00c2cb")
             ])
             fig_brand.update_layout(barmode="group")
@@ -295,10 +327,8 @@ def update_story_dashboard(selected_brand, n):
     else:
         fig_brand = go.Figure()
         
-    # 5. Topic Sentiment Net Chart (Dynamic)
+    # 5. Topic Sentiment Net Chart
     if not df_topic.empty:
-        # If a specific brand is selected, we should filter topics matching that brand!
-        # Since topic_analytics doesn't have brand column, we can do it by analyzing raw_tweets
         if selected_brand != "all" and not df_raw_tweets.empty and "brand" in df_raw_tweets.columns:
             brand_tweets = df_raw_tweets[df_raw_tweets["brand"] == selected_brand]
             if not brand_tweets.empty and "topic" in brand_tweets.columns:
@@ -316,7 +346,7 @@ def update_story_dashboard(selected_brand, n):
             fig_topic = px.bar(
                 df_top, x="mentions", y="topic", color="avg_score",
                 orientation="h",
-                labels={"topic": "Topic Field", "mentions": "Menciones", "avg_score": "Sent. Promedio"},
+                labels={"topic": "Topic / Attribute", "mentions": "Mentions", "avg_score": "Avg. Sentiment"},
                 color_continuous_scale=["#e74c3c", "#7f8c8d", "#2ecc71"],
                 color_continuous_midpoint=0.0,
                 category_orders={"topic": df_top.sort_values("mentions", ascending=True)["topic"].tolist()}
@@ -325,16 +355,16 @@ def update_story_dashboard(selected_brand, n):
                 plot_bgcolor="#ffffff",
                 paper_bgcolor="#ffffff",
                 margin=dict(l=40, r=40, t=10, b=40),
-                xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1"),
-                yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1"),
-                coloraxis_colorbar=dict(title="Score", thickness=15, len=0.8)
+                xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Mentions Count"),
+                yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Detected Topic"),
+                coloraxis_colorbar=dict(title="Net Score", thickness=15, len=0.8)
             )
         else:
             fig_topic = go.Figure()
     else:
         fig_topic = go.Figure()
         
-    # 6. Product Sentiment stacked bar (Dynamic)
+    # 6. Product Sentiment stacked bar
     if not df_product.empty:
         if selected_brand == "all":
             df_prod_filtered = df_product
@@ -357,7 +387,8 @@ def update_story_dashboard(selected_brand, n):
             fig_prod = px.bar(
                 df_pmelt, x="product", y="Mentions", color="Sentiment",
                 color_discrete_map={"Positive": "#2ecc71", "Neutral": "#7f8c8d", "Negative": "#e74c3c"},
-                category_orders={"product": df_prod["product"].tolist()}
+                category_orders={"product": df_prod["product"].tolist()},
+                labels={"product": "Product Line", "Mentions": "Volume of Mentions"}
             )
             fig_prod.update_layout(
                 plot_bgcolor="#ffffff",
@@ -369,11 +400,11 @@ def update_story_dashboard(selected_brand, n):
             )
         else:
             fig_prod = go.Figure()
-            fig_prod.update_layout(title="No products recorded for this brand")
+            fig_prod.update_layout(title="No products recorded for this brand selection")
     else:
         fig_prod = go.Figure()
         
-    # 8. Advanced Social Engagement Scatter (NEW CHART)
+    # 8. Advanced Social Engagement Scatter Plot
     if not df_raw_tweets.empty:
         if selected_brand == "all":
             df_scatter_filtered = df_raw_tweets
@@ -381,26 +412,24 @@ def update_story_dashboard(selected_brand, n):
             df_scatter_filtered = df_raw_tweets[df_raw_tweets["brand"] == selected_brand]
             
         if not df_scatter_filtered.empty:
-            # Map sentiment tags to specific hex codes
             df_scatter_filtered = df_scatter_filtered.copy()
-            df_scatter_filtered["Engagement Count"] = df_scatter_filtered["total_engagement"].fillna(0)
-            df_scatter_filtered["Follower Base"] = pd.to_numeric(df_scatter_filtered["author_followers"], errors="coerce").fillna(0)
+            df_scatter_filtered["Total Engagement"] = df_scatter_filtered["total_engagement"].fillna(0)
+            df_scatter_filtered["Followers Base"] = pd.to_numeric(df_scatter_filtered["author_followers"], errors="coerce").fillna(0)
             
-            # Scatter Plot
             fig_scatter = px.scatter(
                 df_scatter_filtered,
                 x="sentiment_score",
-                y="Engagement Count",
-                size="Follower Base",
+                y="Total Engagement",
+                size="Followers Base",
                 color="sentiment",
                 hover_data=["author_userName", "brand", "topic"],
                 labels={
                     "sentiment_score": "VADER Net Sentiment Intensity Score",
-                    "Engagement Count": "User Engagement (Likes+Retweets)",
+                    "Total Engagement": "Reactions (Likes+Retweets)",
                     "sentiment": "Mood Tag"
                 },
                 color_discrete_map={"positive": "#2ecc71", "neutral": "#7f8c8d", "negative": "#e74c3c"},
-                size_max=40
+                size_max=45
             )
             fig_scatter.update_layout(
                 plot_bgcolor="#ffffff",
@@ -412,11 +441,11 @@ def update_story_dashboard(selected_brand, n):
             )
         else:
             fig_scatter = go.Figure()
-            fig_scatter.update_layout(title="No raw social engagement data")
+            fig_scatter.update_layout(title="No raw social engagement data for this selection")
     else:
         fig_scatter = go.Figure()
         
-    # 7. Representative comment cards (quotes - Dynamic & Slicing Safe)
+    # 7. Representative comment cards (quotes)
     comments_html = []
     if not df_comments.empty:
         if selected_brand == "all":
@@ -436,12 +465,12 @@ def update_story_dashboard(selected_brand, n):
             if best.strip() != "" and best.strip().lower() != "none" and best.strip().lower() != "nan":
                 brand_cards.append(html.Div(className="quote-card positive", children=[
                     html.P(f'"{best[:260]}..."' if len(best) > 260 else f'"{best}"', className="quote-text"),
-                    html.Div(f"★ Positive Feedback on {brand_name}", className="quote-author")
+                    html.Div(f"★ Positive Feedback - {brand_name}", className="quote-author")
                 ]))
             if worst.strip() != "" and worst.strip().lower() != "none" and worst.strip().lower() != "nan":
                 brand_cards.append(html.Div(className="quote-card negative", children=[
                     html.P(f'"{worst[:260]}..."' if len(worst) > 260 else f'"{worst}"', className="quote-text"),
-                    html.Div(f"⚠ Critical Feedback on {brand_name}", className="quote-author")
+                    html.Div(f"⚠ Critical Feedback - {brand_name}", className="quote-author")
                 ]))
                 
             if brand_cards:
@@ -452,7 +481,7 @@ def update_story_dashboard(selected_brand, n):
     if not comments_html:
         comments_html = [html.P("No representative comments loaded for this selection.", style={"color": "#64748b"})]
         
-    # Meta tags
+    # Meta timestamps
     if meta["mod_time"] > 0:
         import datetime
         dt = datetime.datetime.fromtimestamp(meta["mod_time"]).strftime("%Y-%m-%d %H:%M:%S")
@@ -460,7 +489,7 @@ def update_story_dashboard(selected_brand, n):
     else:
         updated_str = "Insights Updated: N/A"
         
-    files_str = f"Loaded parquets: {meta['brand_file']} | {meta['story_file']}"
+    files_str = f"Active Parquets: {meta['brand_file']} | {meta['story_file']}"
     
     return (
         narrative_title,
@@ -473,7 +502,8 @@ def update_story_dashboard(selected_brand, n):
         comments_html,
         updated_str,
         files_str,
-        brand_title
+        brand_title,
+        dropdown_options
     )
 
 if __name__ == "__main__":

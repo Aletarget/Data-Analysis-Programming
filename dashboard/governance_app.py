@@ -8,14 +8,31 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Base paths
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-GOLD_PATH = os.path.join(PROJECT_ROOT, "datalake_gold")
+# Dynamic path resolver for Gold layers to support both Docker and local developer laptops
+def resolve_gold_path():
+    env_path = os.getenv("GOLD_PATH")
+    if env_path:
+        return env_path
+    
+    # Resolve relative to the script location so it works from any execution working directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    possible_paths = [
+        os.path.join(script_dir, "../datalake_gold"),
+        os.path.join(script_dir, "datalake_gold"),
+        os.path.join(os.getcwd(), "datalake_gold"),
+        os.path.join(os.getcwd(), "../datalake_gold"),
+    ]
+    for p in possible_paths:
+        if os.path.exists(p) and os.path.isdir(p):
+            return os.path.abspath(p)
+            
+    return "/opt/airflow/datalake_gold"
+
+GOLD_PATH = resolve_gold_path()
 GOV_TWEETS_PATH = os.path.join(GOLD_PATH, "governance", "tweets")
 GOV_NEWS_PATH = os.path.join(GOLD_PATH, "governance", "news")
 
-# Helpers to load latest Parquet files
+# Helper to find latest Parquet folder/file
 def get_latest_parquet(dir_path, pattern):
     search_pattern = os.path.join(dir_path, pattern)
     folders = glob.glob(search_pattern)
@@ -23,6 +40,7 @@ def get_latest_parquet(dir_path, pattern):
         return None
     return max(folders, key=os.path.getmtime)
 
+# Load governance data
 def load_data():
     tweets_dir = get_latest_parquet(GOV_TWEETS_PATH, "governance_tweets_weekly_*.parquet")
     news_dir = get_latest_parquet(GOV_NEWS_PATH, "governance_news_weekly_*.parquet")
@@ -38,9 +56,9 @@ def load_data():
         
     return df_tweets, df_news, tweets_dir, news_dir
 
-# Calculations for Governance KPIs filtered by source
+# Compute Governance KPIs
 def compute_kpis(df_tweets, df_news, selected_source):
-    # Filter data based on selection
+    # Filter based on selected stream source
     if selected_source == "twitter":
         active_tweets = df_tweets
         active_news = pd.DataFrame()
@@ -70,7 +88,7 @@ def compute_kpis(df_tweets, df_news, selected_source):
             "kpi_table_data": []
         }
     
-    # 1. Null rate computation
+    # 1. Null Rate computation on critical columns
     tweets_cols = ["tweet_id", "date_day", "author_userName", "text", "sentiment", "sentiment_score"]
     news_cols = ["newsLink", "date_day", "comment_text", "sentiment", "sentiment_score"]
     
@@ -80,17 +98,25 @@ def compute_kpis(df_tweets, df_news, selected_source):
     total_expected_cells = (total_tweets * len(tweets_cols)) + (total_news * len(news_cols))
     overall_null_rate = (tweets_nulls + news_nulls) / total_expected_cells * 100 if total_expected_cells > 0 else 0.0
     
-    # Null rate by column
+    # Null rate by column for visualization
     null_rates = []
     if total_tweets > 0:
         for c in active_tweets.columns:
-            null_rates.append({"Source": "Twitter", "Column": c, "Null Rate (%)": active_tweets[c].isna().mean() * 100})
+            null_rates.append({
+                "Source": "Twitter / X", 
+                "Column": c, 
+                "Null Rate (%)": active_tweets[c].isna().mean() * 100
+            })
     if total_news > 0:
         for c in active_news.columns:
-            null_rates.append({"Source": "News", "Column": c, "Null Rate (%)": active_news[c].isna().mean() * 100})
+            null_rates.append({
+                "Source": "GSM Arena (News)", 
+                "Column": c, 
+                "Null Rate (%)": active_news[c].isna().mean() * 100
+            })
     df_null_by_col = pd.DataFrame(null_rates).sort_values("Null Rate (%)", ascending=False)
     
-    # 2. Duplicate rate
+    # 2. Duplicate Rate
     dup_tweets = active_tweets["tweet_id"].duplicated().sum() if "tweet_id" in active_tweets.columns else 0
     dup_news = active_news.duplicated(subset=["newsLink", "comment_text"]).sum() if ("newsLink" in active_news.columns and "comment_text" in active_news.columns) else 0
     overall_dup_rate = (dup_tweets + dup_news) / total_records * 100
@@ -112,7 +138,7 @@ def compute_kpis(df_tweets, df_news, selected_source):
     else:
         overall_schema_compliance = compliance_news
         
-    # 4. Language Diversity & Total Engagement
+    # 4. Diversity metrics
     unique_languages = active_tweets["lang"].nunique() if "lang" in active_tweets.columns else 0
     total_engagement = int(active_tweets["total_engagement"].sum()) if "total_engagement" in active_tweets.columns else 0
     
@@ -131,33 +157,38 @@ def compute_kpis(df_tweets, df_news, selected_source):
                     upper = q3 + 1.5 * iqr
                     outliers = series[(series < lower) | (series > upper)].count()
                     rate = outliers / len(series) * 100
-                    outlier_metrics.append({"Metric": c, "Outlier Rate (%)": rate, "Outliers": int(outliers), "Sample Size": len(series)})
+                    outlier_metrics.append({
+                        "Metric": c, 
+                        "Outlier Rate (%)": rate, 
+                        "Outliers": int(outliers), 
+                        "Sample Size": len(series)
+                    })
     df_outliers = pd.DataFrame(outlier_metrics)
     
-    # 6. Volume Over Time
-    vol_tweets = active_tweets.groupby("date_day").size().reset_index(name="Volume").assign(Source="Twitter") if "date_day" in active_tweets.columns else pd.DataFrame()
+    # 6. Ingested volume
+    vol_tweets = active_tweets.groupby("date_day").size().reset_index(name="Volume").assign(Source="Twitter / X") if "date_day" in active_tweets.columns else pd.DataFrame()
     vol_news = active_news.groupby("date_day").size().reset_index(name="Volume").assign(Source="News Comments") if "date_day" in active_news.columns else pd.DataFrame()
     df_volume = pd.concat([vol_tweets, vol_news], ignore_index=True)
     if not df_volume.empty:
         df_volume["date_day"] = pd.to_datetime(df_volume["date_day"]).dt.strftime("%Y-%m-%d")
         df_volume = df_volume.sort_values("date_day")
         
-    # 7. Text lengths data combined
+    # 7. Text lengths
     text_lengths = []
     if total_tweets > 0 and "text_length" in active_tweets.columns:
-        text_lengths.append(active_tweets[["text_length"]].assign(Source="Twitter"))
+        text_lengths.append(active_tweets[["text_length"]].assign(Source="Twitter / X"))
     if total_news > 0 and "text_length" in active_news.columns:
         text_lengths.append(active_news[["text_length"]].assign(Source="News Comments"))
     df_lengths = pd.concat(text_lengths, ignore_index=True) if text_lengths else pd.DataFrame()
     
-    # KPI Table mapping
+    # Tabular compliance records
     kpi_table = [
-        {"kpi": "Total Records", "value": f"{total_records:,}", "threshold": "N/A", "status": "INFO", "desc": "Total comments and tweets analyzed in this run"},
-        {"kpi": "Null Rate", "value": f"{overall_null_rate:.2f}%", "threshold": "< 5.00%", "status": "PASS" if overall_null_rate < 5 else "FAIL", "desc": "Percentage of missing cells in critical fields"},
-        {"kpi": "Duplicate Rate", "value": f"{overall_dup_rate:.2f}%", "threshold": "< 2.00%", "status": "PASS" if overall_dup_rate < 2 else "WARNING", "desc": "Percentage of duplicate unique identifiers"},
-        {"kpi": "Schema Compliance", "value": f"{overall_schema_compliance:.1f}%", "threshold": "> 95.0%", "status": "PASS" if overall_schema_compliance > 95 else "FAIL", "desc": "Percentage of expected structure columns present"},
-        {"kpi": "Unique Languages", "value": f"{unique_languages}", "threshold": "N/A", "status": "INFO", "desc": "Diversity of languages registered in X/Twitter posts"},
-        {"kpi": "Social Engagement", "value": f"{total_engagement:,}", "threshold": "N/A", "status": "INFO", "desc": "Accumulated social interactions (likes + retweets + replies)"}
+        {"kpi": "Total Records Ingested", "value": f"{total_records:,}", "threshold": "N/A", "status": "INFO", "desc": "Sum total of comments and tweets processed successfully in this batch."},
+        {"kpi": "Null Rate (Critical Fields)", "value": f"{overall_null_rate:.2f}%", "threshold": "< 5.00%", "status": "PASS" if overall_null_rate < 5 else "FAIL", "desc": "Percentage of missing cells in critical fields. Low values ensure complete profiles."},
+        {"kpi": "Duplicate Rate", "value": f"{overall_dup_rate:.2f}%", "threshold": "< 2.00%", "status": "PASS" if overall_dup_rate < 2 else "WARNING", "desc": "Percentage of duplicate unique identifiers. Helps detect spam or ingestion repeats."},
+        {"kpi": "Schema Compliance", "value": f"{overall_schema_compliance:.1f}%", "threshold": "> 95.0%", "status": "PASS" if overall_schema_compliance > 95 else "FAIL", "desc": "Percentage of expected columns present. Protects analytics engines from breaking."},
+        {"kpi": "Unique Languages Detected", "value": f"{unique_languages}", "threshold": "N/A", "status": "INFO", "desc": "Diversity of languages recorded in the ingested X/Twitter dataset."},
+        {"kpi": "Total Social Engagement", "value": f"{total_engagement:,}", "threshold": "N/A", "status": "INFO", "desc": "Accumulated social interactions (likes + retweets + replies + quotes)."}
     ]
     
     return {
@@ -177,45 +208,60 @@ def compute_kpis(df_tweets, df_news, selected_source):
 # Initialize Dash application
 app = dash.Dash(__name__, title="Governance Quality Dashboard")
 
-# Define Layout
+# App Layout
 app.layout = html.Div(className="dashboard-container", children=[
     # Header
     html.Div(className="dashboard-header", children=[
         html.H1("Governance & Data Quality Dashboard", className="dashboard-title"),
-        html.P("Real-time data quality monitoring, schema compliance, text profiles and outlier tracking across Medallion layers", className="dashboard-subtitle"),
+        html.P("Real-time data quality monitoring, schema compliance, text profiles, and outlier tracking across Medallion layers", className="dashboard-subtitle"),
         html.Div(className="header-meta", children=[
             html.Div(className="meta-badge accent", id="meta-last-updated"),
-            html.Div(className="meta-badge", children="Audience: Data Engineers & Analysts"),
+            html.Div(className="meta-badge", children="Audience: Data Engineers & Quality Analysts"),
             html.Div(className="meta-badge", id="meta-files-loaded")
         ])
     ]),
     
-    # Controls Panel
+    # Informative panel explaining business rules
+    html.Div(className="card-premium", style={"marginBottom": "2rem", "borderLeft": "6px solid #1b4fbf", "background": "linear-gradient(to right, #eff6ff, #ffffff)"}, children=[
+        html.H3("Business Rules for Data Quality (Thresholds)", style={"margin": "0 0 0.75rem 0", "color": "#1b4fbf", "fontWeight": "800", "fontSize": "1.15rem"}),
+        html.P([
+            html.Span("This panel automatically monitors data status against the quality standards defined for this project:", style={"fontWeight": "600", "color": "#334155"}),
+            html.Br(),
+            html.Strong("1. Null Rate (< 5.0%): "), "Ensures completeness of ingested attributes. High rates block downstream classification engines.",
+            html.Br(),
+            html.Strong("2. Duplicate Rate (< 2.0%): "), "Monitors for data replication, spam accounts, or network ingestion retries. Crucial for statistical accuracy.",
+            html.Br(),
+            html.Strong("3. Schema Compliance (> 95.0%): "), "Ensures the structure of Parquet layers matches expected columns to prevent runtime query crashes."
+        ], style={"lineHeight": "1.6", "fontSize": "0.95rem", "color": "#475569", "margin": "0"})
+    ]),
+    
+    # Input panel
     html.Div(className="controls-panel", children=[
-        html.Span("Filter Data Stream:", className="control-label"),
+        html.Span("Filter Data Stream Source:", className="control-label"),
         dcc.Dropdown(
             id="source-selector",
             options=[
-                {"label": "All Streams Unified", "value": "all"},
+                {"label": "All Streams Unified (Twitter + GSM Arena)", "value": "all"},
                 {"label": "Twitter / X Stream Only", "value": "twitter"},
-                {"label": "GSM Arena / News Comments Only", "value": "news"}
+                {"label": "GSM Arena (News Comments) Only", "value": "news"}
             ],
             value="all",
             clearable=False,
-            className="control-dropdown"
+            className="control-dropdown",
+            style={"width": "350px"}
         )
     ]),
     
-    # dcc.Interval to trigger reload
+    # 5-minute reload interval
     dcc.Interval(id="interval-reload", interval=300000, n_intervals=0),
     
-    # KPI Summary Cards Grid
+    # KPI Grid cards
     html.Div(className="kpi-grid", children=[
         # Card 1: Total Records
         html.Div(className="card-premium kpi-card kpi-success", children=[
-            html.Div("Total Records", className="kpi-label"),
+            html.Div("Total Records Ingested", className="kpi-label"),
             html.Div("-", className="kpi-value", id="kpi-total-records"),
-            html.Span("Healthy", className="kpi-status-badge status-success", id="status-total-records")
+            html.Span("Active", className="kpi-status-badge status-success", id="status-total-records")
         ]),
         # Card 2: Null Rate
         html.Div(className="card-premium kpi-card", id="card-null-rate", children=[
@@ -237,47 +283,52 @@ app.layout = html.Div(className="dashboard-container", children=[
         ])
     ]),
     
-    # Row 1: Volume Trend & Null Rates per Column
+    # Grid 1: Volume Line Chart & Null rates per column
     html.Div(className="chart-grid-2", children=[
-        # Volume Chart
+        # Volume
         html.Div(className="card-premium", children=[
-            html.H3("Ingested Volume Over Time", className="card-title"),
+            html.H3("Ingested Data Volume over Time", className="card-title"),
+            html.P("Displays the daily volume of tweets and comments successfully processed, helping analysts spot collection spikes or server downtime.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1rem 0"}),
             dcc.Graph(id="chart-volume", config={"displayModeBar": False})
         ]),
-        # Null rate by column chart
+        # Null columns
         html.Div(className="card-premium", children=[
-            html.H3("Null Rates per Column Field", className="card-title"),
+            html.H3("Field Null Rates (Top 10)", className="card-title"),
+            html.P("Maps which columns contain the highest ratio of missing attributes, showing if API responses or scrapers are dropping parameters.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1rem 0"}),
             dcc.Graph(id="chart-null-by-col", config={"displayModeBar": False})
         ])
     ]),
     
-    # Row 2: Text Length Distribution & Outliers Rate
+    # Grid 2: Text Length boxplot & Outlier Rates
     html.Div(className="chart-grid-2", children=[
-        # Text lengths distribution (BOX PLOT)
+        # Length BoxPlot
         html.Div(className="card-premium", children=[
-            html.H3("Text Length Profiles (Character Count)", className="card-title"),
+            html.H3("Text Length Profile by Source (Character Count)", className="card-title"),
+            html.P("Measures the distribution of characters per comment/tweet. Useful for separating short noisy statements from deep reviews.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1rem 0"}),
             dcc.Graph(id="chart-text-lengths", config={"displayModeBar": False})
         ]),
-        # Outliers Chart
+        # Outliers Bar
         html.Div(className="card-premium", children=[
-            html.H3("Outlier Rate in Numeric Metrics (IQR)", className="card-title"),
+            html.H3("Outlier Rates in Social Metrics (IQR)", className="card-title"),
+            html.P("Identifies extreme viral posts or bot accounts whose interaction count (likes, retweets) falls way outside normal distributions.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1rem 0"}),
             dcc.Graph(id="chart-outliers", config={"displayModeBar": False})
         ])
     ]),
     
-    # Row 3: Full KPI Control Table
+    # Grid 3: Full KPI Tabular View
     html.Div(className="chart-grid-1", children=[
         html.Div(className="card-premium", children=[
-            html.H3("Data Quality Control Framework", className="card-title"),
+            html.H3("Data Quality Control Framework Audit", className="card-title"),
+            html.P("Detailed tabular log of each monitored quality metric, its business rule threshold, and current verification status.", style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1.5rem 0"}),
             html.Div(style={"marginTop": "0.5rem"}, children=[
                 dash_table.DataTable(
                     id="quality-table",
                     columns=[
-                        {"name": "Control KPI", "id": "kpi"},
+                        {"name": "Quality Control KPI", "id": "kpi"},
                         {"name": "Current Value", "id": "value"},
-                        {"name": "Threshold Limit", "id": "threshold"},
+                        {"name": "Target Threshold", "id": "threshold"},
                         {"name": "Compliance Status", "id": "status"},
-                        {"name": "Traceability Description", "id": "desc"}
+                        {"name": "Description & Traceability", "id": "desc"}
                     ],
                     style_as_list_view=True,
                     style_cell={
@@ -305,6 +356,11 @@ app.layout = html.Div(className="dashboard-container", children=[
                             "if": {"column_id": "status", "filter_query": "{status} eq 'FAIL'"},
                             "color": "#c0392b",
                             "fontWeight": "bold"
+                        },
+                        {
+                            "if": {"column_id": "status", "filter_query": "{status} eq 'INFO'"},
+                            "color": "#1b4fbf",
+                            "fontWeight": "bold"
                         }
                     ]
                 )
@@ -313,7 +369,7 @@ app.layout = html.Div(className="dashboard-container", children=[
     ])
 ])
 
-# Callbacks to load, compute and render all components dynamically
+# Callbacks to dynamically update quality metrics & charts
 @app.callback(
     [
         Output("kpi-total-records", "children"),
@@ -353,7 +409,7 @@ def update_dashboard(selected_source, n):
     # 2. Compute KPIs
     metrics = compute_kpis(df_tweets, df_news, selected_source)
     
-    # Formats & Status mappings
+    # Formatting and status bindings
     total_rec_str = f"{metrics['total_records']:,}"
     
     # Null rate status
@@ -376,7 +432,7 @@ def update_dashboard(selected_source, n):
     else:
         dup_status, dup_badge_class, dup_card_class = "Critical", "kpi-status-badge status-danger", "card-premium kpi-card kpi-danger"
         
-    # Compliance rate status
+    # Schema compliance status
     comp_rate = metrics["schema_compliance"]
     comp_rate_str = f"{comp_rate:.1f}%"
     if comp_rate >= 98:
@@ -387,36 +443,36 @@ def update_dashboard(selected_source, n):
         comp_status, comp_badge_class, comp_card_class = "Critical", "kpi-status-badge status-danger", "card-premium kpi-card kpi-danger"
         
     # 3. Create Plots
-    # Volume chart
+    # Ingested Volume Over Time
     df_volume = metrics["volume_over_time"]
     if not df_volume.empty:
         fig_volume = px.line(
             df_volume, x="date_day", y="Volume", color="Source",
-            labels={"date_day": "Ingestion Date", "Volume": "Record Count"},
-            color_discrete_map={"Twitter": "#1b4fbf", "News Comments": "#00c2cb"}
+            labels={"date_day": "Ingestion Date", "Volume": "Records Count"},
+            color_discrete_map={"Twitter / X": "#1b4fbf", "News Comments": "#00c2cb"}
         )
         fig_volume.update_traces(line=dict(width=3), marker=dict(size=6))
     else:
-        fig_volume = px.line(title="No volume data loaded")
+        fig_volume = px.line(title="No volume records found")
     
     fig_volume.update_layout(
         plot_bgcolor="#ffffff",
         paper_bgcolor="#ffffff",
         margin=dict(l=40, r=40, t=10, b=40),
-        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1"),
-        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1"),
+        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Date"),
+        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Record Count"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     
-    # Null rate by column chart (Top 10 null columns)
+    # Null rate by Column (Top 10 null columns)
     df_null = metrics["null_by_col"]
     if not df_null.empty:
         df_null_filtered = df_null.head(10)
         fig_null = px.bar(
             df_null_filtered, x="Null Rate (%)", y="Column", color="Source",
             orientation="h",
-            labels={"Column": "Field Name", "Null Rate (%)": "Null Ratio (%)"},
-            color_discrete_map={"Twitter": "#1b4fbf", "News": "#00c2cb"},
+            labels={"Column": "Field Name", "Null Rate (%)": "Null Rate (%)"},
+            color_discrete_map={"Twitter / X": "#1b4fbf", "GSM Arena (News)": "#00c2cb"},
             category_orders={"Column": df_null_filtered["Column"].tolist()}
         )
     else:
@@ -426,52 +482,52 @@ def update_dashboard(selected_source, n):
         plot_bgcolor="#ffffff",
         paper_bgcolor="#ffffff",
         margin=dict(l=40, r=40, t=10, b=40),
-        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", range=[0, 100]),
-        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1"),
+        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", range=[0, 100], title="Null Ratio (%)"),
+        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Field Name"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     
-    # Text lengths boxplot chart (NEW ADDITION)
+    # Text length distribution boxplot
     df_len = metrics["text_length_data"]
     if not df_len.empty:
         fig_len = px.box(
             df_len, x="Source", y="text_length", color="Source",
             labels={"text_length": "Character Count", "Source": "Stream Source"},
-            color_discrete_map={"Twitter": "#1b4fbf", "News Comments": "#00c2cb"}
+            color_discrete_map={"Twitter / X": "#1b4fbf", "News Comments": "#00c2cb"}
         )
     else:
-        fig_len = px.box(title="No text data loaded")
+        fig_len = px.box(title="No text length metrics available")
         
     fig_len.update_layout(
         plot_bgcolor="#ffffff",
         paper_bgcolor="#ffffff",
         margin=dict(l=40, r=40, t=10, b=40),
-        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1"),
-        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1"),
+        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Stream Source"),
+        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Character Count"),
         showlegend=False
     )
     
-    # Outliers rate by column chart
+    # Outlier Rate by Column Bar Chart
     df_out = metrics["outlier_by_col"]
     if not df_out.empty:
         fig_out = px.bar(
             df_out, x="Outlier Rate (%)", y="Metric",
             orientation="h",
-            labels={"Metric": "Numeric Field", "Outlier Rate (%)": "Outlier Ratio (%)"},
+            labels={"Metric": "Social Metric", "Outlier Rate (%)": "Outlier Ratio (%)"},
             color_discrete_sequence=["#e74c3c"]
         )
     else:
-        fig_out = px.bar(title="No outlier data detected (Twitter only)")
+        fig_out = px.bar(title="No outlier metrics found (Twitter only)")
         
     fig_out.update_layout(
         plot_bgcolor="#ffffff",
         paper_bgcolor="#ffffff",
         margin=dict(l=40, r=40, t=10, b=40),
-        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", range=[0, 20]),
-        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1")
+        xaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", range=[0, 20], title="Outlier Rate (%)"),
+        yaxis=dict(gridcolor="#f1f5f9", linecolor="#cbd5e1", title="Metric")
     )
     
-    # 4. Last updated meta dates
+    # 4. Generate metadata timestamps
     last_mod_time = max(os.path.getmtime(tweets_file) if tweets_file else 0, os.path.getmtime(news_file) if news_file else 0)
     if last_mod_time > 0:
         import datetime
@@ -480,7 +536,7 @@ def update_dashboard(selected_source, n):
     else:
         updated_str = "Data Updated: N/A"
         
-    files_str = f"Loaded parquets: {os.path.basename(tweets_file) if tweets_file else 'None'} | {os.path.basename(news_file) if news_file else 'None'}"
+    files_str = f"Active Parquets: {os.path.basename(tweets_file) if tweets_file else 'None'} | {os.path.basename(news_file) if news_file else 'None'}"
     
     return (
         total_rec_str,
