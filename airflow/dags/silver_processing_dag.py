@@ -76,14 +76,17 @@ def clean_text_for_nlp(text):
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
+
+DEDUP_KEYS = {
+    "tweets":   ["id"],
+    "noticias": ["newsLink"],
+}
+
 def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
-    import pandas as pd
-    import json
 
     log.info("Iniciando procesamiento — source: %s, topic: %s", source, topic)
 
     raw_data = load_latest_bronze(source)
-
     doc = raw_data[0] if isinstance(raw_data, list) else raw_data
 
     if source == "twitter":
@@ -107,7 +110,6 @@ def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
     else:
         raw_docs = raw_data if isinstance(raw_data, list) else [raw_data]
 
-
     cleaned_docs = []
     for doc_item in raw_docs:
         flat = flatten_dict(doc_item)
@@ -115,7 +117,6 @@ def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
             if isinstance(v, (dict, list)):
                 flat[k] = json.dumps(v, ensure_ascii=False)
         cleaned_docs.append(flat)
-
 
     df = pd.DataFrame(cleaned_docs)
 
@@ -126,28 +127,42 @@ def process_and_write_parquet(source: str, topic: str, **kwargs) -> str:
     for col in date_cols:
         df[col] = pd.to_datetime(df[col].astype(str), utc=True, errors='coerce')
 
-    silver_dir = Path(SILVER_BASE_PATH)
-    silver_dir.mkdir(parents=True, exist_ok=True)
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    dest_file = silver_dir / f"{topic}_processed_{timestamp}.parquet"
-
     log.info("Aplicando limpieza NLP a columnas de texto...")
     text_cols = [c for c in df.columns if c in ['text', 'content', 'description', 'title']]
     for col in text_cols:
         df[f"{col}_cleaned"] = df[col].apply(clean_text_for_nlp)
-        # Calcular la longitud del texto limpio (KPI de Gobernanza futuro)
-        df[f"{col}_length"] = df[f"{col}_cleaned"].apply(len)
-    
-    
+        df[f"{col}_length"]  = df[f"{col}_cleaned"].apply(len)
+
+    # ── Archivo semanal ──────────────────────────────────────────────────────
+    silver_dir = Path(SILVER_BASE_PATH)
+    silver_dir.mkdir(parents=True, exist_ok=True)
+
+    year, week, _ = datetime.utcnow().isocalendar()
+    dest_file = silver_dir / f"{topic}_processed_{year}_W{week:02d}.parquet"
+
+    # Append si ya existe el parquet de esta semana
+    if dest_file.exists():
+        existing_df = pd.read_parquet(dest_file)
+        df = pd.concat([existing_df, df], ignore_index=True)
+        log.info("Append — filas previas: %d", len(existing_df))
+
+    # Deduplicar por clave natural según la fuente
+    dedup_key = DEDUP_KEYS.get(topic)
+    if dedup_key and all(k in df.columns for k in dedup_key):
+        before = len(df)
+        df = df.drop_duplicates(subset=dedup_key, keep="last")
+        log.info("Deduplicación por %s: %d → %d filas", dedup_key, before, len(df))
+
     df.to_parquet(
-        dest_file,                          
+        dest_file,
         engine='pyarrow',
-        coerce_timestamps='us',              
-        allow_truncated_timestamps=True      
+        coerce_timestamps='us',
+        allow_truncated_timestamps=True,
     )
 
-    log.info("Silver escrito: %s — %d filas", dest_file, len(df))
+    log.info("Silver escrito: %s — %d filas totales", dest_file, len(df))
     return str(dest_file)
+
 
 # DAG to clean and convert webscrapping .json file to .parquet file 
 with DAG(

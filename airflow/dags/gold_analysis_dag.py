@@ -169,8 +169,8 @@ def _safe_date_col():
 # Gold writer helpers
 
 def _gold_path(name: str) -> str:
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    return f"{GOLD_BASE_PATH}/{name}_{timestamp}.parquet"
+    year, week, _ = datetime.utcnow().isocalendar()
+    return f"{GOLD_BASE_PATH}/{name}_{year}_W{week:02d}.parquet"
 
 def _write_gold_parquet(df: pd.DataFrame, name: str, spark: SparkSession) -> None:
     path = _gold_path(name)
@@ -178,8 +178,8 @@ def _write_gold_parquet(df: pd.DataFrame, name: str, spark: SparkSession) -> Non
     log.info("Gold written: %s (%d rows)", path, len(df))
 
 def _write_gold_json(data: dict | list, name: str) -> None:
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    path = Path(GOLD_BASE_PATH) / f"{name}_{timestamp}.json"
+    year, week, _ = datetime.utcnow().isocalendar()
+    path = Path(GOLD_BASE_PATH) / f"{name}_{year}_W{week:02d}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
@@ -255,9 +255,9 @@ def process_governance_tweets() -> None:
 
     # Write to governance/tweets/ subfolder
     gov_path = f"{GOLD_BASE_PATH}/governance/tweets"
-    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    year, week, _ = datetime.utcnow().isocalendar()
     spark.createDataFrame(pdf).coalesce(1).write.mode("overwrite").parquet(
-        f"{gov_path}/governance_tweets_weekly_{ts}.parquet"
+        f"{gov_path}/governance_tweets_weekly_{year}_W{week:02d}.parquet"
     )
     log.info("Governance tweets written: %d rows", len(pdf))
     spark.stop()
@@ -302,9 +302,9 @@ def process_governance_news() -> None:
     pdf["sentiment_score"] = scores
 
     gov_path = f"{GOLD_BASE_PATH}/governance/news"
-    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    year, week, _ = datetime.utcnow().isocalendar()
     spark.createDataFrame(pdf).coalesce(1).write.mode("overwrite").parquet(
-        f"{gov_path}/governance_news_weekly_{ts}.parquet"
+        f"{gov_path}/governance_news_weekly_{year}_W{week:02d}.parquet"
     )
     log.info("Governance news written: %d rows", len(pdf))
     spark.stop()
@@ -314,17 +314,19 @@ def process_governance_news() -> None:
 
 def _load_gov_tweets(spark: SparkSession) -> pd.DataFrame:
     gov_dir = Path(GOLD_BASE_PATH) / "governance" / "tweets"
-    files = list(gov_dir.glob("governance_tweets_weekly_*.parquet"))
-    if not files:
-        raise FileNotFoundError("No governance tweets found. Run process_governance_tweets first.")
-    return spark.read.parquet(str(max(files, key=lambda p: p.stat().st_mtime))).toPandas()
+    year, week, _ = datetime.utcnow().isocalendar()
+    expected = gov_dir / f"governance_tweets_weekly_{year}_W{week:02d}.parquet"
+    if not expected.exists():
+        raise FileNotFoundError(f"No governance tweets para {year}_W{week:02d}.")
+    return spark.read.parquet(str(expected)).toPandas()
 
 def _load_gov_news(spark: SparkSession) -> pd.DataFrame:
     gov_dir = Path(GOLD_BASE_PATH) / "governance" / "news"
-    files = list(gov_dir.glob("governance_news_weekly_*.parquet"))
-    if not files:
-        raise FileNotFoundError("No governance news found. Run process_governance_news first.")
-    return spark.read.parquet(str(max(files, key=lambda p: p.stat().st_mtime))).toPandas()
+    year, week, _ = datetime.utcnow().isocalendar()
+    expected = gov_dir / f"governance_news_weekly_{year}_W{week:02d}.parquet"
+    if not expected.exists():
+        raise FileNotFoundError(f"No governance news para {year}_W{week:02d}.")
+    return spark.read.parquet(str(expected)).toPandas()
 
 def _sentiment_pcts(sub: pd.DataFrame, score_col: str = "sentiment_score") -> dict:
     total = len(sub)

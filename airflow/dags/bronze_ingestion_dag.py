@@ -154,13 +154,13 @@ with DAG(
         python_callable=extract_webscraping
     )
 
-    trigger_silver = TriggerDagRunOperator(
+    trigger_silver_webscraping = TriggerDagRunOperator(
         task_id="trigger_silver_webscraping",
         trigger_dag_id="silver_webscraping",
         wait_for_completion=False,
     )
 
-    t1 >> t2 >> trigger_silver
+    t1 >> t2 >> trigger_silver_webscraping
 
 
 
@@ -186,10 +186,10 @@ with DAG(
         python_callable=extract_twitter
     )
 
-    trigger_silver = TriggerDagRunOperator(
+    trigger_silver_tweeter = TriggerDagRunOperator(
         task_id="trigger_silver_twitter",
         trigger_dag_id="silver_twitter",
         wait_for_completion=False,
     )
 
-    t1 >> t2 >> trigger_silver
+    t1 >> t2 >> trigger_silver_tweeter
