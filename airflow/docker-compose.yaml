@@ -105,7 +105,7 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
-      - ./airflow/sql/init_neo_db.sql:/docker-entrypoint-initdb.d/init_neo_db.sql
+      # - ./airflow/sql/init_neo_db.sql:/docker-entrypoint-initdb.d/init_neo_db.sql
     ports:
       - '5439:5432' #Evitar conflictos con otras instancias de postgres (5439)
     healthcheck:

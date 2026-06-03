@@ -108,9 +108,24 @@ docker compose down
 
 The presentation layer consists of two independent Plotly Dash web applications located in `dashboard/`. They load the latest Parquet folders directly from the Gold data lake layer.
 
-### Setup & Run Dashboards
+Both dashboards feature a dynamic path resolver, allowing them to run seamlessly without absolute path configurations. The path is determined automatically from the `GOLD_PATH` environment variable (if running in Docker) or from parent/relative directories containing `datalake_gold` (if running locally on a developer's laptop).
 
-1. Create and activate your local Python virtual environment, then install dependencies:
+### Running Dashboards in Docker (Included in Compose)
+
+By default, launching `docker compose up -d` in the `airflow/` directory starts both dashboards on their default ports:
+- **Governance Dashboard**: [http://localhost:8050](http://localhost:8050)
+- **Storytelling Dashboard**: [http://localhost:8051](http://localhost:8051)
+
+If you modify dashboard files on the host, you must rebuild the containers to apply the changes:
+```bash
+cd airflow
+docker compose down
+docker compose up --build -d
+```
+
+### Running Dashboards Locally (Outside Docker)
+
+1. Set up a virtual environment and install dependencies:
    ```bash
    python -m venv .venv
    source .venv/bin/activate
@@ -118,19 +133,23 @@ The presentation layer consists of two independent Plotly Dash web applications 
    pip install dash
    ```
 
-2. **Governance & Data Quality Dashboard (localhost:8050)**:
-   A dashboard designed for data engineers and analysts. Surfaces overall null ratios, duplicate rates, and schema compliance in visual metric cards colored by warning thresholds. Shows horizontal null profiles, box plots of text character length distributions, volume over time, and outlier detection (IQR) with a channel filter:
+2. Stop the Docker dashboard services to release ports `8050` and `8051`:
    ```bash
-   python dashboard/governance_app.py
+   cd airflow
+   docker compose stop dashboard-governance dashboard-storytelling
    ```
-   Open your browser at [http://localhost:8050](http://localhost:8050).
 
-3. **Business Storytelling & Virality Dashboard (localhost:8051)**:
-   A dashboard designed for marketing managers and product owners. Synthesizes net sentiment, weekly plain-language executive summaries, brand mention shares, product line sentiment breakdowns, representative positive/critical comment cards, and social virality scatter plots mapping sentiment score vs social engagement counts:
-   ```bash
-   python dashboard/storytelling_app.py
-   ```
-   Open your browser at [http://localhost:8051](http://localhost:8051).
+3. Launch the applications locally:
+   - **Governance & Data Quality Dashboard (localhost:8050)**:
+     Surfaces overall null ratios, duplicate rates, and schema compliance in visual metric cards colored by warning thresholds. Includes a dedicated **Business Rules** quality threshold card and detailed helper texts. Shows horizontal null profiles, text length distributions, volume over time, and outlier detection (IQR) with channel filters.
+     ```bash
+     python dashboard/governance_app.py
+     ```
+   - **Business Storytelling & Virality Dashboard (localhost:8051)**:
+     Synthesizes net sentiment, weekly plain-language executive summaries, brand mention shares, product line sentiment breakdowns, representative positive/critical comment cards, and social virality scatter plots. Explains VADER scoring metrics, and features a **dynamic brand selector** that automatically detects and populates new incoming brands from raw Parquet files on the fly.
+     ```bash
+     python dashboard/storytelling_app.py
+     ```
 
 ## Step-by-Step to Inspect MongoDB
 
