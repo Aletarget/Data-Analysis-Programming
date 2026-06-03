@@ -9,10 +9,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Base paths
-GOLD_PATH = os.getenv(
-    "GOLD_PATH",
-    "/opt/airflow/datalake_gold"
-)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+GOLD_PATH = os.path.join(PROJECT_ROOT, "datalake_gold")
 GOV_TWEETS_PATH = os.path.join(GOLD_PATH, "governance", "tweets")
 GOV_NEWS_PATH = os.path.join(GOLD_PATH, "governance", "news")
 
