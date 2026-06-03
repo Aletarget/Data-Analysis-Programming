@@ -75,6 +75,110 @@ def load_gold_storytelling():
             "mod_time": os.path.getmtime(story_file) if story_file else 0
         }
     }
+    
+def load_daily_sentiment_trend():
+    """
+    Builds a daily sentiment trend from governance tweets + news parquets.
+    Returns a DataFrame with columns: [date_day, source, brand, positive_pct, negative_pct, neutral_pct, avg_score, mentions]
+    """
+    rows = []
+
+    # --- Tweets ---
+    tweet_files = glob.glob(os.path.join(GOV_TWEETS_PATH, "governance_tweets_weekly_*.parquet"))
+    if tweet_files:
+        df_tw = pd.read_parquet(max(tweet_files, key=os.path.getmtime))
+        if "date_day" in df_tw.columns and "sentiment" in df_tw.columns:
+            df_tw["date_day"] = pd.to_datetime(df_tw["date_day"], errors="coerce").dt.date
+            df_tw = df_tw.dropna(subset=["date_day", "brand"])
+            for (date, brand), grp in df_tw.groupby(["date_day", "brand"]):
+                counts = grp["sentiment"].value_counts()
+                total  = len(grp)
+                rows.append({
+                    "date_day":     date,
+                    "source":       "Twitter",
+                    "brand":        brand,
+                    "mentions":     total,
+                    "positive_pct": round(counts.get("positive", 0) / total * 100, 1),
+                    "negative_pct": round(counts.get("negative", 0) / total * 100, 1),
+                    "neutral_pct":  round(counts.get("neutral",  0) / total * 100, 1),
+                    "avg_score":    round(grp["sentiment_score"].mean(), 4),
+                })
+
+    # --- News comments ---
+    news_files = glob.glob(os.path.join(GOV_NEWS_PATH, "governance_news_weekly_*.parquet"))
+    if news_files:
+        df_nw = pd.read_parquet(max(news_files, key=os.path.getmtime))
+        if "date_day" in df_nw.columns and "sentiment" in df_nw.columns:
+            df_nw["date_day"] = pd.to_datetime(df_nw["date_day"], errors="coerce").dt.date
+            df_nw = df_nw.dropna(subset=["date_day", "brand"])
+            for (date, brand), grp in df_nw.groupby(["date_day", "brand"]):
+                counts = grp["sentiment"].value_counts()
+                total  = len(grp)
+                rows.append({
+                    "date_day":     date,
+                    "source":       "News",
+                    "brand":        brand,
+                    "mentions":     total,
+                    "positive_pct": round(counts.get("positive", 0) / total * 100, 1),
+                    "negative_pct": round(counts.get("negative", 0) / total * 100, 1),
+                    "neutral_pct":  round(counts.get("neutral",  0) / total * 100, 1),
+                    "avg_score":    round(grp["sentiment_score"].mean(), 4),
+                })
+
+    if not rows:
+        return pd.DataFrame()
+
+    df = pd.DataFrame(rows).sort_values("date_day")
+    return df
+
+
+def compute_sentiment_alerts(df_trend: pd.DataFrame, threshold: float = 15.0) -> list[dict]:
+    """
+    Detects day-over-day shifts in negative_pct > threshold for any brand.
+    Returns a list of alert dicts: {brand, source, date, prev_neg, curr_neg, delta, severity}
+    """
+    if df_trend.empty:
+        return []
+
+    alerts = []
+    for (brand, source), grp in df_trend.groupby(["brand", "source"]):
+        grp = grp.sort_values("date_day").reset_index(drop=True)
+        for i in range(1, len(grp)):
+            prev = grp.iloc[i - 1]
+            curr = grp.iloc[i]
+            delta_neg = curr["negative_pct"] - prev["negative_pct"]
+            delta_pos = curr["positive_pct"] - prev["positive_pct"]
+
+            # Alert on negative spike
+            if delta_neg >= threshold:
+                alerts.append({
+                    "brand":    brand,
+                    "source":   source,
+                    "date":     str(curr["date_day"]),
+                    "prev_neg": prev["negative_pct"],
+                    "curr_neg": curr["negative_pct"],
+                    "delta":    round(delta_neg, 1),
+                    "type":     "negative_spike",
+                    "severity": "critical" if delta_neg >= 25 else "warning",
+                })
+            # Alert on positive recovery
+            if delta_pos >= threshold and prev["positive_pct"] < 40:
+                alerts.append({
+                    "brand":    brand,
+                    "source":   source,
+                    "date":     str(curr["date_day"]),
+                    "prev_pos": prev["positive_pct"],
+                    "curr_pos": curr["positive_pct"],
+                    "delta":    round(delta_pos, 1),
+                    "type":     "positive_recovery",
+                    "severity": "info",
+                })
+
+    # Most recent and most severe first
+    severity_order = {"critical": 0, "warning": 1, "info": 2}
+    alerts.sort(key=lambda a: (severity_order[a["severity"]], a["date"]), reverse=False)
+    return alerts
+
 
 # Initialize Dash application
 app = dash.Dash(__name__, title="Storytelling Insights Dashboard")
@@ -167,6 +271,35 @@ app.layout = html.Div(className="dashboard-container", children=[
         ])
     ]),
     
+    
+    # Grid 5: Daily Sentiment Trend
+    html.Div(className="chart-grid-1", children=[
+        html.Div(className="card-premium", children=[
+            html.H3("Daily Sentiment Trend", className="card-title"),
+            html.P(
+                "Day-over-day evolution of positive and negative sentiment. "
+                "Helps identify inflection points during the week.",
+                style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1.5rem 0"}
+            ),
+            dcc.Graph(id="chart-daily-trend", config={"displayModeBar": False})
+        ])
+    ]),
+
+    # Grid 6: Sentiment Alerts
+    html.Div(className="chart-grid-1", children=[
+        html.Div(className="card-premium", children=[
+            html.H3("Sentiment Shift Alerts", className="card-title"),
+            html.P(
+                "Automatic detection of abrupt sentiment changes (≥15 pp day-over-day). "
+                "Critical alerts indicate shifts ≥25 pp.",
+                style={"fontSize": "0.85rem", "color": "#64748b", "margin": "-0.5rem 0 1.5rem 0"}
+            ),
+            html.Div(id="container-alerts")
+        ])
+    ]),
+    
+    
+    
     # Grid 4: Representative Community Comments
     html.Div(className="chart-grid-1", children=[
         html.Div(className="card-premium", children=[
@@ -191,7 +324,9 @@ app.layout = html.Div(className="dashboard-container", children=[
         Output("story-meta-last-updated", "children"),
         Output("story-meta-files-loaded", "children"),
         Output("chart-brand-title", "children"),
-        Output("brand-selector", "options")
+        Output("brand-selector", "options"),
+        Output("chart-daily-trend", "figure"),
+        Output("container-alerts", "children"),
     ],
     [
         Input("brand-selector", "value"),
@@ -491,6 +626,114 @@ def update_story_dashboard(selected_brand, n):
         
     files_str = f"Active Parquets: {meta['brand_file']} | {meta['story_file']}"
     
+    # ── Daily Trend ──────────────────────────────────────────────────────────────
+    df_trend = load_daily_sentiment_trend()
+
+    if not df_trend.empty:
+        if selected_brand != "all":
+            df_trend_plot = df_trend[df_trend["brand"] == selected_brand]
+        else:
+            # Aggregate across all brands by date + source
+            df_trend_plot = (
+                df_trend
+                .groupby(["date_day", "source"], as_index=False)
+                .agg(
+                    positive_pct=("positive_pct", "mean"),
+                    negative_pct=("negative_pct", "mean"),
+                    neutral_pct =("neutral_pct",  "mean"),
+                    mentions    =("mentions",      "sum"),
+                )
+            )
+
+        fig_trend = go.Figure()
+        colors = {"Twitter": {"pos": "#1b4fbf", "neg": "#e74c3c"},
+                "News":    {"pos": "#00c2cb", "neg": "#f39c12"}}
+
+        for source in df_trend_plot["source"].unique():
+            sub = df_trend_plot[df_trend_plot["source"] == source].sort_values("date_day")
+            c   = colors.get(source, {"pos": "#2ecc71", "neg": "#e74c3c"})
+
+            fig_trend.add_trace(go.Scatter(
+                x=sub["date_day"], y=sub["positive_pct"],
+                name=f"{source} — Positive",
+                mode="lines+markers",
+                line=dict(color=c["pos"], width=2),
+                marker=dict(size=6),
+            ))
+            fig_trend.add_trace(go.Scatter(
+                x=sub["date_day"], y=sub["negative_pct"],
+                name=f"{source} — Negative",
+                mode="lines+markers",
+                line=dict(color=c["neg"], width=2, dash="dot"),
+                marker=dict(size=6),
+            ))
+
+        fig_trend.update_layout(
+            plot_bgcolor="#ffffff",
+            paper_bgcolor="#ffffff",
+            margin=dict(l=40, r=40, t=10, b=40),
+            xaxis=dict(title="Date", gridcolor="#f1f5f9", linecolor="#cbd5e1"),
+            yaxis=dict(title="Sentiment %", gridcolor="#f1f5f9", linecolor="#cbd5e1", range=[0, 100]),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            hovermode="x unified",
+        )
+    else:
+        fig_trend = go.Figure()
+        fig_trend.update_layout(title="No daily data available yet")
+
+    # ── Alerts ───────────────────────────────────────────────────────────────────
+    alerts = compute_sentiment_alerts(
+        df_trend[df_trend["brand"] == selected_brand] if (not df_trend.empty and selected_brand != "all") else df_trend
+    )
+
+    SEVERITY_STYLES = {
+        "critical": {"border": "2px solid #e74c3c", "background": "#fff5f5", "icon": "🚨"},
+        "warning":  {"border": "2px solid #f39c12", "background": "#fffbf0", "icon": "⚠️"},
+        "info":     {"border": "2px solid #2ecc71", "background": "#f0fff4", "icon": "📈"},
+    }
+    TYPE_LABELS = {
+        "negative_spike":    "Negative Spike",
+        "positive_recovery": "Positive Recovery",
+    }
+
+    alerts_html = []
+    for alert in alerts[:10]:  # max 10 cards
+        sty  = SEVERITY_STYLES[alert["severity"]]
+        label = TYPE_LABELS.get(alert["type"], alert["type"])
+
+        if alert["type"] == "negative_spike":
+            detail = (f"Negative sentiment jumped from {alert['prev_neg']:.1f}% "
+                    f"to {alert['curr_neg']:.1f}% (+{alert['delta']} pp)")
+        else:
+            detail = (f"Positive sentiment recovered from {alert['prev_pos']:.1f}% "
+                    f"to {alert['curr_pos']:.1f}% (+{alert['delta']} pp)")
+
+        alerts_html.append(
+            html.Div(style={
+                "border": sty["border"], "background": sty["background"],
+                "borderRadius": "10px", "padding": "1rem 1.25rem",
+                "marginBottom": "0.75rem", "display": "flex",
+                "alignItems": "flex-start", "gap": "0.75rem"
+            }, children=[
+                html.Span(sty["icon"], style={"fontSize": "1.4rem", "marginTop": "2px"}),
+                html.Div(children=[
+                    html.Strong(f"{sty['icon']} [{alert['severity'].upper()}] {label} — "
+                                f"{alert['brand'].capitalize()} ({alert['source']})",
+                                style={"display": "block", "marginBottom": "0.3rem"}),
+                    html.Span(f"Date: {alert['date']}  |  {detail}",
+                            style={"fontSize": "0.9rem", "color": "#475569"}),
+                ])
+            ])
+        )
+
+    if not alerts_html:
+        alerts_html = [html.P(
+            "No significant sentiment shifts detected for this selection.",
+            style={"color": "#2ecc71", "fontWeight": "600"}
+        )]
+    
+    
+    
     return (
         narrative_title,
         exec_summary,
@@ -503,7 +746,9 @@ def update_story_dashboard(selected_brand, n):
         updated_str,
         files_str,
         brand_title,
-        dropdown_options
+        dropdown_options,
+        fig_trend,     
+        alerts_html
     )
 
 if __name__ == "__main__":
